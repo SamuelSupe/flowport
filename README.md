@@ -23,7 +23,9 @@ FlowPort collects, processes and routes logs, metrics, traces and events through
 - Healthy target branches proceed independently. Parsing or Pipeline failures release the accepted input. Legacy isolated failed payloads require explicit export or cleanup.
 - FIFO eviction is allowed data loss. A crash after remote receipt but before local acknowledgement can cause duplicates. There is no strict exactly-once or global ordering guarantee.
 
-Documentation baseline: **0.1.24**. See the [release manifest](https://flowport.pages.dev/en/downloads/manifest/) and [upgrade notes](https://flowport.pages.dev/en/changelog/) before upgrading.
+Documentation baseline: **0.1.25**. See the [release manifest](https://flowport.pages.dev/en/downloads/manifest/) and [upgrade notes](https://flowport.pages.dev/en/changelog/) before upgrading.
+
+New 0.1.25 installations use the [Web setup wizard](https://flowport.pages.dev/en/docs/#web-setup) to set the administrator password and management/HTTP ingestion domain or IP and port. Read the local `manager/setup-token` after startup. Existing instances retain their password and queues; offline recovery and verified backups are described in the [operations guide](https://flowport.pages.dev/en/docs/delivery/#offline-maintenance).
 
 ## Documentation and feedback
 

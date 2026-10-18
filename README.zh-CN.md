@@ -27,7 +27,9 @@ FlowPort 是面向日志、指标、链路与事件的数据采集和路由平�
 
 ## 下载与版本
 
-当前文档基线：**0.1.24**。始终从[官网下载页](https://flowport.pages.dev/downloads/)获取当前版本，核对同版本 SHA-256；[版本清单](https://flowport.pages.dev/downloads/manifest/)和[更新记录](https://flowport.pages.dev/changelog/)说明版本及升级边界。
+当前文档基线：**0.1.25**。始终从[官网下载页](https://flowport.pages.dev/downloads/)获取当前版本，核对同版本 SHA-256；[版本清单](https://flowport.pages.dev/downloads/manifest/)和[更新记录](https://flowport.pages.dev/changelog/)说明版本及升级边界。
+
+0.1.25 全新安装通过 [Web 初始化向导](https://flowport.pages.dev/docs/#web-setup) 设置管理员密码、管理/HTTP 接入监听域名或 IP 和端口，启动后读取本机 `manager/setup-token`。已有实例保留密码与队列；离线救援和可校验备份见[运维说明](https://flowport.pages.dev/docs/delivery/#offline-maintenance)。
 
 ## 反馈
 

@@ -23,7 +23,9 @@ FlowPort는 **Source → Pipeline → Destinations**를 통해 로그, 메트릭
 - 정상 대상 분기는 독립적으로 전송을 계속합니다. 파싱 또는 Pipeline 처리에 실패하면 수신한 입력 페이로드를 해제합니다. 이전 형식의 격리된 실패 페이로드는 명시적으로 내보내거나 정리해야 합니다.
 - FIFO 제거로 데이터가 손실될 수 있습니다. 원격 대상이 데이터를 수신한 뒤 로컬 확인 전에 프로세스가 비정상 종료되면 중복 전송이 발생할 수 있습니다. 정확히 한 번의 전송이나 전역 전송 순서는 보장하지 않습니다.
 
-문서 기준 버전은 **0.1.24**입니다. 업그레이드하기 전에 [릴리스 매니페스트](https://flowport.pages.dev/ko/downloads/manifest/)와 [업그레이드 안내](https://flowport.pages.dev/ko/changelog/)를 확인하세요.
+문서 기준 버전은 **0.1.25**입니다. 업그레이드하기 전에 [릴리스 매니페스트](https://flowport.pages.dev/ko/downloads/manifest/)와 [업그레이드 안내](https://flowport.pages.dev/ko/changelog/)를 확인하세요.
+
+0.1.25 새 설치는 [웹 초기화](https://flowport.pages.dev/ko/docs/#web-setup)에서 관리자 비밀번호와 관리/HTTP 수집용 도메인 또는 IP, 포트를 설정합니다. 시작 후 로컬 `manager/setup-token`을 읽으세요. 기존 비밀번호와 큐는 유지됩니다. 오프라인 복구와 백업 검증은 [운영 안내](https://flowport.pages.dev/ko/docs/delivery/#offline-maintenance)를 참고하세요.
 
 ## 문서와 피드백
 

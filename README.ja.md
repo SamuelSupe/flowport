@@ -23,7 +23,9 @@ FlowPort は **Source → Pipeline → Destinations** を通じて、ログ、�
 - 正常な送信先の分岐は独立して送信を続けます。解析または Pipeline の失敗時には、受け付け済みの入力を解放します。旧形式で隔離された失敗ペイロードは、明示的なエクスポートまたは削除が必要です。
 - FIFO による破棄ではデータが失われます。遠隔の送信先が受信した後、ローカルでの確認前にクラッシュすると、重複送信される場合があります。厳密に一度だけの送信や、全体での送信順序は保証しません。
 
-ドキュメントの基準バージョンは **0.1.24** です。アップグレード前に[リリースマニフェスト](https://flowport.pages.dev/ja/downloads/manifest/)と[アップグレードに関する注意事項](https://flowport.pages.dev/ja/changelog/)をご確認ください。
+ドキュメントの基準バージョンは **0.1.25** です。アップグレード前に[リリースマニフェスト](https://flowport.pages.dev/ja/downloads/manifest/)と[アップグレードに関する注意事項](https://flowport.pages.dev/ja/changelog/)をご確認ください。
+
+0.1.25 の新規環境では [Web 初回設定](https://flowport.pages.dev/ja/docs/#web-setup) で管理者パスワードと管理/HTTP 取り込みのドメインまたは IP、ポートを指定します。起動後にホストの `manager/setup-token` を読み取ります。既存のパスワードとキューは維持します。オフライン復旧とバックアップ検証は[運用ガイド](https://flowport.pages.dev/ja/docs/delivery/#offline-maintenance)を参照してください。
 
 ## ドキュメントとフィードバック
 

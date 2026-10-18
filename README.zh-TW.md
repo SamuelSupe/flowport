@@ -23,7 +23,9 @@ FlowPort 透過 **Source → Pipeline → Destinations** 收集、處理與路�
 - 健康的目標分支繼續獨立傳送。解析或 Pipeline 失敗會釋放已接收的輸入；舊隔離失敗載荷須明確匯出或清理。
 - FIFO 淘汰允許資料遺失。若遠端已接收，但本機尚未確認便發生崩潰，可能重複傳送；不保證嚴格只傳送一次或全域順序。
 
-文件基準版本：**0.1.24**。升級前請查閱[版本清單](https://flowport.pages.dev/zh-TW/downloads/manifest/)與[升級說明](https://flowport.pages.dev/zh-TW/changelog/)。
+文件基準版本：**0.1.25**。升級前請查閱[版本清單](https://flowport.pages.dev/zh-TW/downloads/manifest/)與[升級說明](https://flowport.pages.dev/zh-TW/changelog/)。
+
+0.1.25 全新安裝透過 [Web 初始化向導](https://flowport.pages.dev/zh-TW/docs/#web-setup) 設定管理員密碼與管理/HTTP 接入的網域或 IP、連接埠；啟動後讀取本機 `manager/setup-token`。既有實例保留密碼與佇列；離線救援及可校驗備份見[運維說明](https://flowport.pages.dev/zh-TW/docs/delivery/#offline-maintenance)。
 
 ## 文件與回饋
 
