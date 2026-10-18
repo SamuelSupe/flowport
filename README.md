@@ -1,6 +1,8 @@
 # FlowPort
 
-[简体中文](README.zh-CN.md) · [Website](https://flowport.pages.dev/en/) · [Downloads](https://flowport.pages.dev/en/downloads/) · [Documentation](https://flowport.pages.dev/en/docs/) · [Changelog](https://flowport.pages.dev/en/changelog/)
+[English](README.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
+
+[Website](https://flowport.pages.dev/en/) · [Downloads](https://flowport.pages.dev/en/downloads/) · [Documentation](https://flowport.pages.dev/en/docs/) · [Changelog](https://flowport.pages.dev/en/changelog/)
 
 FlowPort collects, processes and routes logs, metrics, traces and events through **Source → Pipeline → Destinations**.
 

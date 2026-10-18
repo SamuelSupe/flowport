@@ -1,6 +1,8 @@
 # FlowPort
 
-[English](README.md) · [官网](https://flowport.pages.dev/) · [下载](https://flowport.pages.dev/downloads/) · [完整文档](https://flowport.pages.dev/docs/) · [版本记录](https://flowport.pages.dev/changelog/)
+[English](README.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
+
+[官网](https://flowport.pages.dev/) · [下载](https://flowport.pages.dev/downloads/) · [完整文档](https://flowport.pages.dev/docs/) · [版本记录](https://flowport.pages.dev/changelog/)
 
 FlowPort 是面向日志、指标、链路与事件的数据采集和路由平台，通过 Source → Pipeline → Destinations 配置采集、处理与多目标发送。
 
