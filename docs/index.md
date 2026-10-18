@@ -1,6 +1,6 @@
 # 文档目录 / Documentation
 
-[返回首页](../README.md) · [English overview](../README.en.md)
+[返回首页](../README.zh-CN.md) · [English overview](../README.md)
 
 完整产品文档由 Cloudflare 官网维护。GitHub 文档说明当前产品行为与入口，不包含实现源码。文档基线为 0.1.24；最新版本以官网为准。
 

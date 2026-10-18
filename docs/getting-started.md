@@ -1,6 +1,6 @@
 # 快速开始
 
-[返回首页](../README.md) · [完整安装指南](https://flowport.pages.dev/docs/) · [English guide](https://flowport.pages.dev/en/docs/)
+[返回首页](../README.zh-CN.md) · [完整安装指南](https://flowport.pages.dev/docs/) · [English guide](https://flowport.pages.dev/en/docs/)
 
 ## 安装与登录
 

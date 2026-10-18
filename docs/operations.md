@@ -1,6 +1,6 @@
 # 运维与升级
 
-[返回首页](../README.md) · [完整交付与运维文档](https://flowport.pages.dev/docs/delivery/) · [集群指南](https://flowport.pages.dev/docs/cluster/)
+[返回首页](../README.zh-CN.md) · [完整交付与运维文档](https://flowport.pages.dev/docs/delivery/) · [集群指南](https://flowport.pages.dev/docs/cluster/)
 
 ## 监控与排障
 

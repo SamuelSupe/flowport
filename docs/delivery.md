@@ -1,6 +1,6 @@
 # 交付与恢复
 
-[返回首页](../README.md) · [完整交付指南](https://flowport.pages.dev/docs/delivery/) · [English guide](https://flowport.pages.dev/en/docs/delivery/)
+[返回首页](../README.zh-CN.md) · [完整交付指南](https://flowport.pages.dev/docs/delivery/) · [English guide](https://flowport.pages.dev/en/docs/delivery/)
 
 ## 接收与发送
 
