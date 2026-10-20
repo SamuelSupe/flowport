@@ -8,6 +8,25 @@ FlowPort は **Source → Pipeline → Destinations** を通じて、ログ、�
 
 **このリポジトリには製品ドキュメントと公式サイトへのリンクのみを掲載しています。製品や公式サイトのソースコード、ソース履歴、バイナリは公開していません。** Linux パッケージ、チェックサム、リリースマニフェストは Cloudflare 上の公式サイトで提供します。ドキュメントの公開は、製品のソースコードのオープンソース化を意味しません。エディションとライセンスについては公式サイトをご確認ください。
 
+## 0.2.0 の新機能
+
+- Lookup は複合 Exact キー、IPv4/IPv6 CIDR、RE2 Regex、MMDB に対応します。CSV、CSV.GZ、MMDB をアップロードするか、HTTP(S)、S3、PostgreSQL、MySQL から完全なスナップショットをバックグラウンド同期できます。Pipeline の lookup("binding_name") がローカル検索し、Fields または Tags に結果を対応付けます。
+- 自動更新、固定バージョン、試行検索、履歴へのロールバック、Worker のインストール状態を提供します。受信時にバッチのデータバージョンを固定します。同期失敗時は有効な旧版を保持し、キューに必要な資源が欠けた場合はペイロードを保持して処理を停止します。ロールバック後の自動同期は明示的な再開が必要です。
+- cache_get/cache_set、point_window/window_hit、agg_create/agg_metric で短期重複排除、エラー前後の文脈、件数／時間ウィンドウ集約を利用できます。上限付きメモリは Worker、フロー公開版、入力カテゴリ別に分離し、再起動で消去します。サンプルデバッグは実行中の状態に影響しません。
+- 5 種のシナリオテンプレートと単一フローのインポート／エクスポート（flowport.flow v1、最大 2 MiB）を追加しました。ローカル宛先と Lookup を対応付け、確認・保存後に明示的に公開します。キュー、カーソル、Lookup データ、メモリ状態は含みません。接続資格情報は除去しますが、スクリプト／SQL のリテラルは確認が必要です。フォーム配置、非同期キャンセル、資源の再利用、複数バインドのエクスポートを改善しました。
+
+## 0.2.0 へのアップグレード
+
+制御プロトコルは v6、チェックポイントは形式 3 に更新します。サービスを停止し、各ノードの全データディレクトリ、master.key、Lookup 資源、環境設定をバックアップしてから、管理サーバーと全 Worker を同時更新してください。ダウングレードには更新前の完全なバックアップが必要です。Linux ARM64/x86_64 の tar.gz、deb、rpm を提供し、インストールと実行に Node.js は不要です。
+
+キューが参照する固定 Lookup 資源が欠けた場合は、復旧まで処理を停止し、通常の Pipeline エラーとして入力を破棄しません。メモリ内のキャッシュ、文脈、集約状態は再起動で消去します。すでにキューに保存した出力は元の結果を保持します。
+
+## 使い方
+
+- [Lookup データ補完](docs/ja/lookup.md)
+- [キャッシュとウィンドウ](docs/ja/pipeline.md)
+- [テンプレートとインポート／エクスポート](docs/ja/flows.md)
+
 ## はじめに
 
 1. [Linux パッケージをダウンロードしてインストール](https://flowport.pages.dev/ja/downloads/)します。amd64 と arm64 向けに deb、rpm、tar.gz を提供しています。実行に Node.js、npm、Go コンパイラは不要です。
@@ -23,9 +42,9 @@ FlowPort は **Source → Pipeline → Destinations** を通じて、ログ、�
 - 正常な送信先の分岐は独立して送信を続けます。解析または Pipeline の失敗時には、受け付け済みの入力を解放します。旧形式で隔離された失敗ペイロードは、明示的なエクスポートまたは削除が必要です。
 - FIFO による破棄ではデータが失われます。遠隔の送信先が受信した後、ローカルでの確認前にクラッシュすると、重複送信される場合があります。厳密に一度だけの送信や、全体での送信順序は保証しません。
 
-ドキュメントの基準バージョンは **0.1.25** です。アップグレード前に[リリースマニフェスト](https://flowport.pages.dev/ja/downloads/manifest/)と[アップグレードに関する注意事項](https://flowport.pages.dev/ja/changelog/)をご確認ください。
+ドキュメントの基準バージョンは **0.2.0** です。アップグレード前に[リリースマニフェスト](https://flowport.pages.dev/ja/downloads/manifest/)と[アップグレードに関する注意事項](https://flowport.pages.dev/ja/changelog/)をご確認ください。
 
-0.1.25 の新規環境では [Web 初回設定](https://flowport.pages.dev/ja/docs/#web-setup) で管理者パスワードと管理/HTTP 取り込みのドメインまたは IP、ポートを指定します。起動後にホストの `manager/setup-token` を読み取ります。既存のパスワードとキューは維持します。オフライン復旧とバックアップ検証は[運用ガイド](https://flowport.pages.dev/ja/docs/delivery/#offline-maintenance)を参照してください。
+0.2.0 の新規環境では [Web 初回設定](https://flowport.pages.dev/ja/docs/#web-setup) で管理者パスワードと管理/HTTP 取り込みのドメインまたは IP、ポートを指定します。起動後にホストの `manager/setup-token` を読み取ります。既存のパスワードとキューは維持します。オフライン復旧とバックアップ検証は[運用ガイド](https://flowport.pages.dev/ja/docs/delivery/#offline-maintenance)を参照してください。
 
 ## ドキュメントとフィードバック
 

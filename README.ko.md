@@ -8,6 +8,25 @@ FlowPort는 **Source → Pipeline → Destinations**를 통해 로그, 메트릭
 
 **이 저장소에는 제품 문서와 공식 웹사이트 링크만 게시합니다. 제품 및 웹사이트의 소스 코드, 소스 이력, 바이너리는 공개하지 않습니다.** Linux 패키지, 체크섬, 릴리스 매니페스트는 Cloudflare의 공식 웹사이트에서 제공합니다. 문서 공개가 제품 소스 코드의 오픈 소스화를 의미하지는 않습니다. 에디션과 라이선스는 공식 웹사이트를 확인하세요.
 
+## 0.2.0 새 기능
+
+- Lookup은 복합 Exact 키, IPv4/IPv6 CIDR, RE2 Regex, MMDB를 지원합니다. CSV, CSV.GZ, MMDB 업로드 또는 HTTP(S), S3, PostgreSQL, MySQL의 전체 스냅샷 백그라운드 동기화를 사용할 수 있습니다. Pipeline의 lookup("binding_name")이 로컬에서 조회하고 Fields 또는 Tags에 결과를 매핑합니다.
+- 자동 업데이트, 고정 버전, 시험 조회, 이력 롤백과 Worker 설치 상태를 제공합니다. 수신 시 배치의 데이터 버전을 고정합니다. 동기화 실패는 마지막 유효 버전을 유지하며 큐에 필요한 리소스가 없으면 페이로드를 보존하고 처리를 일시 중지합니다. 롤백 후 자동 동기화는 명시적으로 재개해야 합니다.
+- cache_get/cache_set, point_window/window_hit, agg_create/agg_metric으로 단기 중복 제거, 오류 전후 문맥, 건수/시간 창 집계를 지원합니다. 제한된 메모리는 Worker, 흐름 게시 버전, 입력 유형별로 격리되고 재시작 시 초기화됩니다. 샘플 디버깅은 실행 상태에 영향을 주지 않습니다.
+- 다섯 가지 시나리오 템플릿과 단일 흐름 가져오기/내보내기(flowport.flow v1, 최대 2 MiB)를 추가했습니다. 로컬 대상과 Lookup을 매핑하고 검토·저장 후 명시적으로 게시합니다. 큐, 커서, Lookup 데이터, 메모리 상태는 포함하지 않습니다. 연결 자격 증명은 제거하지만 스크립트/SQL 리터럴은 검토해야 합니다. 폼 배치, 비동기 취소, 리소스 재사용, 다중 바인딩 내보내기를 개선했습니다.
+
+## 0.2.0 업그레이드
+
+제어 프로토콜은 v6, 체크포인트는 형식 3으로 변경됩니다. 서비스를 중지하고 모든 노드의 전체 데이터 디렉터리, master.key, Lookup 리소스와 환경 설정을 백업한 뒤 관리자와 모든 Worker를 함께 업그레이드하세요. 다운그레이드에는 업그레이드 전 전체 백업이 필요합니다. Linux ARM64/x86_64 tar.gz, deb, rpm을 제공하며 설치와 실행에 Node.js가 필요하지 않습니다.
+
+큐가 참조하는 고정 Lookup 리소스가 없으면 복구할 때까지 처리를 일시 중지하며 일반 Pipeline 실패로 입력을 해제하지 않습니다. 메모리 캐시, 문맥, 집계 상태는 재시작 시 초기화됩니다. 이미 큐에 저장한 출력은 원래 결과를 유지합니다.
+
+## 사용 안내
+
+- [Lookup 데이터 보강](docs/ko/lookup.md)
+- [캐시와 창](docs/ko/pipeline.md)
+- [템플릿과 가져오기/내보내기](docs/ko/flows.md)
+
 ## 시작하기
 
 1. [Linux 패키지를 다운로드하고 설치](https://flowport.pages.dev/ko/downloads/)하세요. amd64와 arm64용 deb, rpm, tar.gz 형식을 제공합니다. FlowPort 실행에는 Node.js, npm, Go 컴파일러가 필요하지 않습니다.
@@ -23,9 +42,9 @@ FlowPort는 **Source → Pipeline → Destinations**를 통해 로그, 메트릭
 - 정상 대상 분기는 독립적으로 전송을 계속합니다. 파싱 또는 Pipeline 처리에 실패하면 수신한 입력 페이로드를 해제합니다. 이전 형식의 격리된 실패 페이로드는 명시적으로 내보내거나 정리해야 합니다.
 - FIFO 제거로 데이터가 손실될 수 있습니다. 원격 대상이 데이터를 수신한 뒤 로컬 확인 전에 프로세스가 비정상 종료되면 중복 전송이 발생할 수 있습니다. 정확히 한 번의 전송이나 전역 전송 순서는 보장하지 않습니다.
 
-문서 기준 버전은 **0.1.25**입니다. 업그레이드하기 전에 [릴리스 매니페스트](https://flowport.pages.dev/ko/downloads/manifest/)와 [업그레이드 안내](https://flowport.pages.dev/ko/changelog/)를 확인하세요.
+문서 기준 버전은 **0.2.0**입니다. 업그레이드하기 전에 [릴리스 매니페스트](https://flowport.pages.dev/ko/downloads/manifest/)와 [업그레이드 안내](https://flowport.pages.dev/ko/changelog/)를 확인하세요.
 
-0.1.25 새 설치는 [웹 초기화](https://flowport.pages.dev/ko/docs/#web-setup)에서 관리자 비밀번호와 관리/HTTP 수집용 도메인 또는 IP, 포트를 설정합니다. 시작 후 로컬 `manager/setup-token`을 읽으세요. 기존 비밀번호와 큐는 유지됩니다. 오프라인 복구와 백업 검증은 [운영 안내](https://flowport.pages.dev/ko/docs/delivery/#offline-maintenance)를 참고하세요.
+0.2.0 새 설치는 [웹 초기화](https://flowport.pages.dev/ko/docs/#web-setup)에서 관리자 비밀번호와 관리/HTTP 수집용 도메인 또는 IP, 포트를 설정합니다. 시작 후 로컬 `manager/setup-token`을 읽으세요. 기존 비밀번호와 큐는 유지됩니다. 오프라인 복구와 백업 검증은 [운영 안내](https://flowport.pages.dev/ko/docs/delivery/#offline-maintenance)를 참고하세요.
 
 ## 문서와 피드백
 

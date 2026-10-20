@@ -8,6 +8,25 @@ FlowPort 透過 **Source → Pipeline → Destinations** 收集、處理與路�
 
 **本儲存庫僅包含產品文件與官網連結，不公開產品原始碼、官網原始碼、原始碼歷史或安裝套件。** Linux 安裝套件、校驗值與版本清單由 Cloudflare 官網提供。公開文件不代表產品原始碼開源；產品版本與授權方式請以官網說明為準。
 
+## 0.2.0 新功能
+
+- Lookup 支援 Exact 複合鍵、IPv4/IPv6 CIDR、RE2 Regex 及 MMDB；可上傳 CSV、CSV.GZ、MMDB，或從 HTTP(S)、S3、PostgreSQL、MySQL 背景同步完整快照。Pipeline 以 lookup("binding_name") 本機查詢並映射欄位或 Tag。
+- Lookup 提供自動更新、固定版本、試查、歷史回復及 Worker 安裝狀態。批次入列時固定資料版本；同步失敗保留最後有效版本，佇列所需資源缺失時暫停處理並保留載荷。回復歷史會暫停自動同步，須明確操作才恢復。
+- 開放 cache_get/cache_set、point_window/window_hit、agg_create/agg_metric，支援短期去重、錯誤上下文及計數／時間視窗彙總。有界記憶體依 Worker、流發佈版本及輸入類型隔離，重啟清空；樣本除錯不影響執行狀態。
+- 新增五種場景範本及單流設定匯入匯出（flowport.flow v1，最大 2 MiB）。映射本機目標及 Lookup，檢查後儲存並明確發佈。套件不含佇列、游標、Lookup 資料或記憶體狀態；連線憑證移除，腳本／SQL 字面值仍須檢查。改善設定版面、非同步取消、資源讀取重用及多綁定匯出。
+
+## 升級至 0.2.0
+
+控制協定升級至 v6，檢查點格式升級至 3。停止服務並備份各節點完整資料目錄、master.key、Lookup 資源與環境設定，再協調升級管理端與全部 Worker。降級須恢復升級前完整備份。提供 Linux ARM64/x86_64 的 tar.gz、deb、rpm；安裝及執行不需 Node.js。
+
+佇列所需的固定 Lookup 資源缺失時暫停處理並等待恢復，不依一般 Pipeline 失敗釋放輸入。記憶體快取、上下文及彙總狀態在重啟後清空；已入列的輸出保留原結果。
+
+## 使用指南
+
+- [Lookup 資料富化](docs/zh-TW/lookup.md)
+- [快取與視窗](docs/zh-TW/pipeline.md)
+- [場景範本與匯入匯出](docs/zh-TW/flows.md)
+
 ## 開始使用
 
 1. [下載並安裝 Linux 套件](https://flowport.pages.dev/zh-TW/downloads/)。支援 amd64、arm64，以及 deb、rpm、tar.gz 格式。執行 FlowPort 不需要 Node.js、npm 或 Go 編譯器。
@@ -23,9 +42,9 @@ FlowPort 透過 **Source → Pipeline → Destinations** 收集、處理與路�
 - 健康的目標分支繼續獨立傳送。解析或 Pipeline 失敗會釋放已接收的輸入；舊隔離失敗載荷須明確匯出或清理。
 - FIFO 淘汰允許資料遺失。若遠端已接收，但本機尚未確認便發生崩潰，可能重複傳送；不保證嚴格只傳送一次或全域順序。
 
-文件基準版本：**0.1.25**。升級前請查閱[版本清單](https://flowport.pages.dev/zh-TW/downloads/manifest/)與[升級說明](https://flowport.pages.dev/zh-TW/changelog/)。
+文件基準版本：**0.2.0**。升級前請查閱[版本清單](https://flowport.pages.dev/zh-TW/downloads/manifest/)與[升級說明](https://flowport.pages.dev/zh-TW/changelog/)。
 
-0.1.25 全新安裝透過 [Web 初始化向導](https://flowport.pages.dev/zh-TW/docs/#web-setup) 設定管理員密碼與管理/HTTP 接入的網域或 IP、連接埠；啟動後讀取本機 `manager/setup-token`。既有實例保留密碼與佇列；離線救援及可校驗備份見[運維說明](https://flowport.pages.dev/zh-TW/docs/delivery/#offline-maintenance)。
+0.2.0 全新安裝透過 [Web 初始化向導](https://flowport.pages.dev/zh-TW/docs/#web-setup) 設定管理員密碼與管理/HTTP 接入的網域或 IP、連接埠；啟動後讀取本機 `manager/setup-token`。既有實例保留密碼與佇列；離線救援及可校驗備份見[運維說明](https://flowport.pages.dev/zh-TW/docs/delivery/#offline-maintenance)。
 
 ## 文件與回饋
 

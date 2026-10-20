@@ -8,6 +8,25 @@ FlowPort 是面向日志、指标、链路与事件的数据采集和路由平�
 
 **本仓库仅发布产品文档和官网链接，不发布产品或官网源码、源码历史及安装包。** Linux 安装包、校验清单和版本信息由 Cloudflare 官网提供。产品许可与商业版本说明以官网为准；文档公开不代表产品源码开源。
 
+## 0.2.0 新能力
+
+- Lookup 支持 Exact 复合键、IPv4/IPv6 CIDR、RE2 Regex 和 MMDB；可上传 CSV、CSV.GZ、MMDB，或从 HTTP(S)、S3、PostgreSQL、MySQL 后台同步完整快照。Pipeline 使用 lookup("绑定名称") 本地查询并映射字段或 Tag。
+- Lookup 支持自动更新、固定版本、试查、历史回滚与 Worker 安装状态。批次入队时固定数据版本；同步失败保留最后有效版本，队列所需资源缺失时暂停处理并保留载荷。回滚会暂停自动同步，恢复须显式操作。
+- 开放 cache_get/cache_set、point_window/window_hit、agg_create/agg_metric，支持短期去重、错误上下文与计数/时间窗口聚合。有界内存按 Worker、流发布版本及输入类型隔离，重启清空；样本调试不影响运行状态。
+- 新增五种场景模板，以及单流配置导入导出（flowport.flow v1，最大 2 MiB）。导入时映射本地目标和 Lookup，检查后保存并显式发布。配置包不包含队列、游标、Lookup 数据或内存状态；连接凭证移除，脚本/SQL 字面值仍须检查。优化配置布局、异步取消、资源读取复用和多绑定导出。
+
+## 升级至 0.2.0
+
+控制协议升级至 v6，检查点格式升级至 3。停止服务，备份每个节点的完整数据目录、master.key、Lookup 资源和环境配置，再协调升级管理端与全部 Worker。回退须恢复升级前完整备份。提供 Linux ARM64/x86_64 的 tar.gz、deb、rpm；安装与运行无需 Node.js。
+
+队列所需的固定 Lookup 资源缺失时暂停处理并等待恢复，不按普通 Pipeline 失败释放输入。内存缓存、上下文和聚合状态重启清空；已经入队的输出保留原结果。
+
+## 使用指南
+
+- [Lookup 数据富化](docs/zh-CN/lookup.md)
+- [缓存与窗口](docs/zh-CN/pipeline.md)
+- [场景模板与导入导出](docs/zh-CN/flows.md)
+
 ## 开始使用
 
 - [快速开始](docs/getting-started.md)：安装、登录、发布与验证第一条数据。
@@ -23,13 +42,13 @@ FlowPort 是面向日志、指标、链路与事件的数据采集和路由平�
 - 社区下载包采用单 Worker；商业多 Worker 部署需使用发行方提供的商业构建与匹配 License。
 - 发送目标失败时继续接入，保留失败分支并退避重试；容量超限按原始接收顺序 FIFO 淘汰。
 
-目录支持不等于所有第三方版本与云权限组合均已深度验收。请依据对应集成指南验证实际环境；本地持久接受不等于下游送达，也不保证严格只发送一次。
+本地持久接受不等于下游送达，也不保证严格只发送一次。
 
 ## 下载与版本
 
-当前文档基线：**0.1.25**。始终从[官网下载页](https://flowport.pages.dev/downloads/)获取当前版本，核对同版本 SHA-256；[版本清单](https://flowport.pages.dev/downloads/manifest/)和[更新记录](https://flowport.pages.dev/changelog/)说明版本及升级边界。
+当前文档基线：**0.2.0**。始终从[官网下载页](https://flowport.pages.dev/downloads/)获取当前版本，核对同版本 SHA-256；[版本清单](https://flowport.pages.dev/downloads/manifest/)和[更新记录](https://flowport.pages.dev/changelog/)说明版本及升级边界。
 
-0.1.25 全新安装通过 [Web 初始化向导](https://flowport.pages.dev/docs/#web-setup) 设置管理员密码、管理/HTTP 接入监听域名或 IP 和端口，启动后读取本机 `manager/setup-token`。已有实例保留密码与队列；离线救援和可校验备份见[运维说明](https://flowport.pages.dev/docs/delivery/#offline-maintenance)。
+0.2.0 全新安装通过 [Web 初始化向导](https://flowport.pages.dev/docs/#web-setup) 设置管理员密码、管理/HTTP 接入监听域名或 IP 和端口，启动后读取本机 `manager/setup-token`。已有实例保留密码与队列；离线救援和可校验备份见[运维说明](https://flowport.pages.dev/docs/delivery/#offline-maintenance)。
 
 ## 反馈
 
