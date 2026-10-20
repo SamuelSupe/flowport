@@ -8,6 +8,14 @@ FlowPort 是面向日志、指标、链路与事件的数据采集和路由平�
 
 **本仓库仅发布产品文档和官网链接，不发布产品或官网源码、源码历史及安装包。** Linux 安装包、校验清单和版本信息由 Cloudflare 官网提供。产品许可与商业版本说明以官网为准；文档公开不代表产品源码开源。
 
+## 0.2.1
+
+- 修复 Kafka 将事件时间用于固定 20 秒投递超时判断的问题，历史日志、指标、链路及其他 Point 数据不再因时间较旧而在发送前失败。Kafka 消息时间与编码载荷中的原始事件时间保持不变，适用于全部 Kafka 输出及复用该协议的服务预设。
+
+- 每次 Kafka 发送由 config.timeout_seconds 控制，默认 20 秒、范围 1–120 秒，并遵守上层更短的取消或截止时间。重试从新一次发送开始计时；发送失败仍保留原队列和处理结果，不通过改写事件时间或清空积压恢复。
+
+- 0.2.1 沿用控制协议 v6 和检查点格式 3。停止服务并备份完整数据目录、master.key、Lookup 资源与环境配置后升级管理端及全部 Worker。恢复原数据目录后，保留的 Kafka 积压自动重试；已被 FIFO 淘汰的数据无法恢复。目标 Broker 或云服务自身的时间范围与保留策略仍适用。
+
 ## 0.2.0 新能力
 
 - Lookup 支持 Exact 复合键、IPv4/IPv6 CIDR、RE2 Regex 和 MMDB；可上传 CSV、CSV.GZ、MMDB，或从 HTTP(S)、S3、PostgreSQL、MySQL 后台同步完整快照。Pipeline 使用 lookup("绑定名称") 本地查询并映射字段或 Tag。
@@ -46,7 +54,7 @@ FlowPort 是面向日志、指标、链路与事件的数据采集和路由平�
 
 ## 下载与版本
 
-当前文档基线：**0.2.0**。始终从[官网下载页](https://flowport.pages.dev/downloads/)获取当前版本，核对同版本 SHA-256；[版本清单](https://flowport.pages.dev/downloads/manifest/)和[更新记录](https://flowport.pages.dev/changelog/)说明版本及升级边界。
+当前文档基线：**0.2.1**。始终从[官网下载页](https://flowport.pages.dev/downloads/)获取当前版本，核对同版本 SHA-256；[版本清单](https://flowport.pages.dev/downloads/manifest/)和[更新记录](https://flowport.pages.dev/changelog/)说明版本及升级边界。
 
 0.2.0 全新安装通过 [Web 初始化向导](https://flowport.pages.dev/docs/#web-setup) 设置管理员密码、管理/HTTP 接入监听域名或 IP 和端口，启动后读取本机 `manager/setup-token`。已有实例保留密码与队列；离线救援和可校验备份见[运维说明](https://flowport.pages.dev/docs/delivery/#offline-maintenance)。
 

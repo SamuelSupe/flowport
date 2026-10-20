@@ -8,6 +8,14 @@ FlowPort는 **Source → Pipeline → Destinations**를 통해 로그, 메트릭
 
 **이 저장소에는 제품 문서와 공식 웹사이트 링크만 게시합니다. 제품 및 웹사이트의 소스 코드, 소스 이력, 바이너리는 공개하지 않습니다.** Linux 패키지, 체크섬, 릴리스 매니페스트는 Cloudflare의 공식 웹사이트에서 제공합니다. 문서 공개가 제품 소스 코드의 오픈 소스화를 의미하지는 않습니다. 에디션과 라이선스는 공식 웹사이트를 확인하세요.
 
+## 0.2.1
+
+- Kafka가 이벤트 시간을 기준으로 고정된 20초 전송 제한을 판단하던 문제를 수정했습니다. 과거 로그, 메트릭, 트레이스 및 기타 Point 데이터가 오래된 시간 때문에 전송 전에 실패하지 않습니다. Kafka 메시지와 인코딩된 페이로드의 원래 이벤트 시간을 보존합니다. 모든 Kafka 출력과 같은 프로토콜을 사용하는 서비스 프리셋에 적용됩니다.
+
+- 각 Kafka 전송 시도에는 config.timeout_seconds를 적용합니다. 기본값은 20초, 범위는 1–120초이며 상위 컨텍스트의 취소나 더 이른 기한도 따릅니다. 재시도는 새로운 전송 기한으로 시작합니다. 전송 실패 시 원래 큐와 처리 결과를 보존하며, 복구를 위해 이벤트 시간을 변경하거나 적체 데이터를 삭제하지 않습니다.
+
+- 0.2.1은 제어 프로토콜 v6와 체크포인트 형식 3을 유지합니다. 서비스를 중지하고 전체 데이터 디렉터리, master.key, Lookup 리소스 및 환경 설정을 백업한 후 관리자와 모든 Worker를 업그레이드하세요. 기존 데이터 디렉터리로 재개하면 보존된 Kafka 적체를 자동으로 재시도합니다. FIFO로 제거된 데이터는 복구할 수 없습니다. Broker 및 클라우드 서비스의 타임스탬프 제한과 보존 정책은 계속 적용됩니다.
+
 ## 0.2.0 새 기능
 
 - Lookup은 복합 Exact 키, IPv4/IPv6 CIDR, RE2 Regex, MMDB를 지원합니다. CSV, CSV.GZ, MMDB 업로드 또는 HTTP(S), S3, PostgreSQL, MySQL의 전체 스냅샷 백그라운드 동기화를 사용할 수 있습니다. Pipeline의 lookup("binding_name")이 로컬에서 조회하고 Fields 또는 Tags에 결과를 매핑합니다.
@@ -42,7 +50,7 @@ FlowPort는 **Source → Pipeline → Destinations**를 통해 로그, 메트릭
 - 정상 대상 분기는 독립적으로 전송을 계속합니다. 파싱 또는 Pipeline 처리에 실패하면 수신한 입력 페이로드를 해제합니다. 이전 형식의 격리된 실패 페이로드는 명시적으로 내보내거나 정리해야 합니다.
 - FIFO 제거로 데이터가 손실될 수 있습니다. 원격 대상이 데이터를 수신한 뒤 로컬 확인 전에 프로세스가 비정상 종료되면 중복 전송이 발생할 수 있습니다. 정확히 한 번의 전송이나 전역 전송 순서는 보장하지 않습니다.
 
-문서 기준 버전은 **0.2.0**입니다. 업그레이드하기 전에 [릴리스 매니페스트](https://flowport.pages.dev/ko/downloads/manifest/)와 [업그레이드 안내](https://flowport.pages.dev/ko/changelog/)를 확인하세요.
+문서 기준 버전은 **0.2.1**입니다. 업그레이드하기 전에 [릴리스 매니페스트](https://flowport.pages.dev/ko/downloads/manifest/)와 [업그레이드 안내](https://flowport.pages.dev/ko/changelog/)를 확인하세요.
 
 0.2.0 새 설치는 [웹 초기화](https://flowport.pages.dev/ko/docs/#web-setup)에서 관리자 비밀번호와 관리/HTTP 수집용 도메인 또는 IP, 포트를 설정합니다. 시작 후 로컬 `manager/setup-token`을 읽으세요. 기존 비밀번호와 큐는 유지됩니다. 오프라인 복구와 백업 검증은 [운영 안내](https://flowport.pages.dev/ko/docs/delivery/#offline-maintenance)를 참고하세요.
 

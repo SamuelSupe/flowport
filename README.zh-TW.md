@@ -8,6 +8,14 @@ FlowPort 透過 **Source → Pipeline → Destinations** 收集、處理與路�
 
 **本儲存庫僅包含產品文件與官網連結，不公開產品原始碼、官網原始碼、原始碼歷史或安裝套件。** Linux 安裝套件、校驗值與版本清單由 Cloudflare 官網提供。公開文件不代表產品原始碼開源；產品版本與授權方式請以官網說明為準。
 
+## 0.2.1
+
+- 修正 Kafka 以事件時間判斷固定 20 秒投遞逾時的問題，歷史日誌、指標、追蹤及其他 Point 資料不再因時間較舊而在傳送前失敗。Kafka 訊息時間與編碼載荷中的原始事件時間保持不變，適用於所有 Kafka 輸出及使用該協定的服務預設。
+
+- 每次 Kafka 傳送由 config.timeout_seconds 控制，預設 20 秒、範圍 1–120 秒，並遵守上層較早的取消或截止時間。重試從新一次傳送開始計時；傳送失敗仍保留原佇列與處理結果，不透過改寫事件時間或清空積壓恢復。
+
+- 0.2.1 沿用控制協定 v6 與檢查點格式 3。停止服務並備份完整資料目錄、master.key、Lookup 資源與環境設定後，升級管理端及所有 Worker。使用原資料目錄恢復後，保留的 Kafka 積壓自動重試；已被 FIFO 淘汰的資料無法恢復。目標 Broker 或雲端服務的時間範圍與保留政策仍適用。
+
 ## 0.2.0 新功能
 
 - Lookup 支援 Exact 複合鍵、IPv4/IPv6 CIDR、RE2 Regex 及 MMDB；可上傳 CSV、CSV.GZ、MMDB，或從 HTTP(S)、S3、PostgreSQL、MySQL 背景同步完整快照。Pipeline 以 lookup("binding_name") 本機查詢並映射欄位或 Tag。
@@ -42,7 +50,7 @@ FlowPort 透過 **Source → Pipeline → Destinations** 收集、處理與路�
 - 健康的目標分支繼續獨立傳送。解析或 Pipeline 失敗會釋放已接收的輸入；舊隔離失敗載荷須明確匯出或清理。
 - FIFO 淘汰允許資料遺失。若遠端已接收，但本機尚未確認便發生崩潰，可能重複傳送；不保證嚴格只傳送一次或全域順序。
 
-文件基準版本：**0.2.0**。升級前請查閱[版本清單](https://flowport.pages.dev/zh-TW/downloads/manifest/)與[升級說明](https://flowport.pages.dev/zh-TW/changelog/)。
+文件基準版本：**0.2.1**。升級前請查閱[版本清單](https://flowport.pages.dev/zh-TW/downloads/manifest/)與[升級說明](https://flowport.pages.dev/zh-TW/changelog/)。
 
 0.2.0 全新安裝透過 [Web 初始化向導](https://flowport.pages.dev/zh-TW/docs/#web-setup) 設定管理員密碼與管理/HTTP 接入的網域或 IP、連接埠；啟動後讀取本機 `manager/setup-token`。既有實例保留密碼與佇列；離線救援及可校驗備份見[運維說明](https://flowport.pages.dev/zh-TW/docs/delivery/#offline-maintenance)。
 
