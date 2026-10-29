@@ -1,0 +1,43 @@
+name: Bug report / 问题反馈
+description: Report a reproducible product problem / 反馈可复现的产品问题
+title: "[Bug] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        English, 简体中文, 繁體中文, 日本語 and 한국어 are welcome.
+        This is a public repository. Remove tokens, passwords and private payloads before posting.
+        请勿提交 Token、密码或未脱敏的业务数据。
+  - type: input
+    id: version
+    attributes:
+      label: FlowPort version / 版本
+      placeholder: "e.g. 0.5.3"
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment / 运行环境
+      description: OS, CPU architecture, package format, browser and deployment mode.
+      placeholder: "Ubuntu 24.04, amd64, deb, Chrome, local Worker"
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce / 复现步骤
+      description: Include the relevant Source and Destination types and a minimal redacted sample.
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected and actual behavior / 预期与实际行为
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Redacted evidence / 脱敏证据
+      description: Relevant errors, screenshots or timestamps. Never include credentials or private data.

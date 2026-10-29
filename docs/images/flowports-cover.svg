@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="380" viewBox="0 0 1200 380" role="img" aria-labelledby="title desc">
+  <title id="title">FlowPorts — Collect. Transform. Deliver.</title>
+  <desc id="desc">Logs, metrics, traces and events flow from sources through a Pipeline to destinations.</desc>
+  <rect width="1200" height="380" rx="20" fill="#faf9f7"/>
+  <path d="M0 356h1200v24H0z" fill="#e7002a"/>
+  <g transform="translate(48 42) scale(.85)"><path d="M29 6 8 39h21V6Zm6 7v26h21L35 13Z" fill="#e7002a"/><path d="M6 45h52C53 53.5 45.5 58 35 58H19L6 45Z" fill="#e7002a"/></g>
+  <g font-family="Arial,Helvetica,sans-serif">
+    <text x="116" y="84" font-size="36" font-weight="700" fill="#221c2d">FlowPorts</text>
+    <text x="52" y="158" font-size="46" font-weight="700" fill="#221c2d">Collect. Transform. Deliver.</text>
+    <text x="54" y="197" font-size="21" fill="#625c69">Your data, on its way. Logs · Metrics · Traces · Events</text>
+    <rect x="54" y="244" width="270" height="68" rx="12" fill="#ffffff" stroke="#ddd8df"/>
+    <rect x="462" y="244" width="274" height="68" rx="12" fill="#221c2d"/>
+    <rect x="874" y="244" width="272" height="68" rx="12" fill="#ffffff" stroke="#ddd8df"/>
+    <text x="189" y="286" text-anchor="middle" font-size="24" font-weight="700" fill="#221c2d">Sources</text>
+    <text x="599" y="286" text-anchor="middle" font-size="24" font-weight="700" fill="#ffffff">Pipeline</text>
+    <text x="1010" y="286" text-anchor="middle" font-size="24" font-weight="700" fill="#221c2d">Destinations</text>
+    <path d="M344 278h92m-12-9 12 9-12 9M756 278h92m-12-9 12 9-12 9" stroke="#e7002a" stroke-width="3" fill="none"/>
+  </g>
+</svg>

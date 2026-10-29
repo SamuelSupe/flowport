@@ -1,14 +1,14 @@
 # Lookup enrichment
 
-[FlowPort 0.2.0](../../README.md) · [Usage guides](https://flowport.pages.dev/en/docs/pipeline/)
+[FlowPorts 0.5.3](../../README.md) · [Docs](../index.md) · [Website](https://flowport.pages.dev/en/docs/)
 
 Lookup resources provide managed, synchronized, versioned local enrichment. The manager fetches a complete snapshot; Workers download validated immutable files without source credentials. Event processing never calls external services. No extra database or scheduler is required.
-
-These screenshots were captured on 2026-10-20 from the 0.2.0 release candidate in English, using an isolated instance and synthetic data. The captured interface is included in 0.2.0; capture build provenance is retained in the screenshot manifest. Addresses and counters are illustrative; select an image to view it full size.
 
 ## Configure and use
 
 Create a resource on the Lookup page. Upload UTF-8 CSV, CSV.GZ or your own MMDB, or configure HTTP(S), a specific S3-compatible Bucket/Key, PostgreSQL or MySQL. CSV headers must be nonempty and unique. Values are strings. The page shows test queries, sync status, versions, flow references and each Worker's installed version.
+
+Different Lookup resources can be created concurrently. Successfully saved resources remain independent and recover after restart. Edits to the same resource must use its current revision; reload after a version conflict before editing again to avoid overwriting another change. Background maintenance and historical version collection do not revert successful updates. Data that becomes the current version again remains available.
 
 Add a binding in the Pipeline panel. Select automatic updates or a fixed version, explicit Field/Tag input keys, lookup columns and output mappings. Insert the function at the desired script position. Its argument must be a string literal; the function applies the same binding and returns whether it matched. Save and publish the flow normally.
 
@@ -19,10 +19,6 @@ The sample workbench's Lookup view shows actual versions, bounded matched rows a
 Search and select resources on the left. Resource configuration shows only the selected source fields, with authentication, TLS and advanced options collapsed. Test lookup lets you choose columns and enter values, then shows result rows and the actual version in a table. Versions & status collects history, Worker installations and referencing flows. Choose a common synchronization interval or enter a custom one. Unsaved changes are protected when leaving; save before uploading, synchronizing or rolling back.
 
 The save bar stays visible while editing long forms. A new resource highlights upload or synchronization as its next step. Successful uploads and the first manual sync open Test lookup automatically. Asterisks in a saved connection address preserve its original value. Authentication headers accept an empty object or a JSON object whose values are strings.
-
-![The Lookup resource page groups source settings, the current version and synchronization status. Advanced options start collapsed.](https://flowport.pages.dev/assets/screenshots/lookup-resource.webp)
-
-*The Lookup resource page groups source settings, the current version and synchronization status. Advanced options start collapsed.*
 
 ## Complete example: enrich service ownership
 
@@ -49,10 +45,6 @@ Click Upload complete snapshot and select `services.csv`. A successful upload op
 {{code:2}}
 
 Testing on the resource page only verifies the lookup data. The resource is not yet connected to a dataflow.
-
-![The test matches service=checkout exactly and returns team, business level and cost center with the actual data version.](https://flowport.pages.dev/assets/screenshots/lookup-query.webp)
-
-*The test matches service=checkout exactly and returns team, business level and cost center with the actual data version.*
 
 ### 3. Bind the resource in Pipeline
 
@@ -83,10 +75,6 @@ Add three output mappings. Enable Default value for each and enter the values be
 | `cost_center` | Field | `cost_center` | `UNKNOWN` |
 
 Write `team` and `level` as Tags for later routing, and `cost_center` as an ordinary field.
-
-![The Pipeline binding reads the service field and explicitly maps lookup columns to the team, business_level and cost_center Tags.](https://flowport.pages.dev/assets/screenshots/lookup-binding.webp)
-
-*The Pipeline binding reads the service field and explicitly maps lookup columns to the team, business_level and cost_center Tags.*
 
 ### 4. Insert the script call
 
@@ -119,10 +107,6 @@ All three events remain, their original fields are unchanged, and the following 
 Check fields and Tags in After processing. Switch to Lookup to see the actual data version, matched rows and diagnostics. A miss does not filter an event, and defaults do not turn a miss into a match.
 
 Fill missing values only preserves any existing field or Tag with the same name, including an empty string. Choose Overwrite existing values if the lookup table should replace existing values.
-
-![The sample workbench displays the Lookup data version and matched rows used by this run. Preview does not deliver business data.](https://flowport.pages.dev/assets/screenshots/lookup-preview.webp)
-
-*The sample workbench displays the Lookup data version and matched rows used by this run. Preview does not deliver business data.*
 
 ### 6. Route or filter by the result
 
@@ -206,3 +190,17 @@ Lookup automatic synchronization is audited with actor `system`. Worker status i
 
 
 Point keys are unique: output names cannot repeat across Fields and Tags. Fill-missing preserves an existing key of either kind; overwrite writes the explicit target kind. MySQL consistent snapshots require transactional tables such as InnoDB.
+
+
+If index construction exceeds the memory budget, the Store releases caches with no active sessions and retries once. Active indexes and snapshots remain usable. Cache eviction neither deletes durable resource versions nor changes versions pinned by queued batches. Requests still fail if active usage genuinely exhausts the budget.
+
+
+Capacity validation keeps all bindings of the same flow resident simultaneously.
+
+Normal Worker maintenance checks loaded Lookup caches every minute and releases content and indexes idle for over five minutes without active query sessions. Memory pressure still triggers immediate idle-cache eviction. Eviction neither deletes immutable version files nor changes queued batches' pinned versions; later access reloads that same version on demand.
+
+Test results belong to the displayed data version. When a new version is detected, old results are cleared. Query settings are retained for unchanged columns; schema changes reset input keys and return columns. A delayed resource list does not replace a new resource you have started filling in.
+
+Candidate parsing, index validation, encryption and download reads run outside the queue metadata lock; revision, current version and active bindings are rechecked before catalog publication. Conflicts retain the old version. Large HTTP downloads are limited to one at a time; content and indexes still share the 256 MiB budget.
+
+Private HTTP collection and diagnostics require administrator CIDR grants on every executing node using `-read-egress-allow-cidrs` / `FLOWPORT_READ_EGRESS_ALLOW_CIDRS`. API/MCP cannot override this. Upgrade all managers and Workers. Configure `-trusted-proxy-cidrs` / `FLOWPORT_TRUSTED_PROXY_CIDRS` for validated client IPs and Secure cookies. Ingest no longer exposes /metrics. See [read policy](https://flowport.pages.dev/en/docs/#configure) and [trusted proxies](https://flowport.pages.dev/en/docs/).

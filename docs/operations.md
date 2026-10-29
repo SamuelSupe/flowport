@@ -1,34 +1,37 @@
 # 运维与升级
 
-[返回首页](../README.zh-CN.md) · [完整交付与运维文档](https://flowport.pages.dev/docs/delivery/) · [集群指南](https://flowport.pages.dev/docs/cluster/)
+[FlowPorts 0.5.3](../README.zh-CN.md) · [运维文档](https://flowport.pages.dev/docs/delivery/) · [集群指南](https://flowport.pages.dev/docs/cluster/)
 
-## 监控与排障
+## 日常检查
 
-- 在运行视图区分接收、处理、各目标发送、FIFO 丢弃、队列年龄和目标告警，先检查目标实际收据。
-- 管理服务与 Worker 的现有 HTTP 端口提供只读 `/metrics`。通过系统设置的「监控与告警」获取抓取配置，并使用 Prometheus / Alertmanager 接入外部通知。
-- 节点报告可能延迟或离线；检查新鲜度，不能把缺失报告当作队列已清空或故障已恢复。
-- 逻辑队列容量与物理磁盘占用分别检查。日志回收需要时间和临时余量；密钥、配置历史及检查点不能按缓存随意删除。
-- 发送故障持续写入仍会 FIFO 滚动；扩大队列只能延长可保留窗口，不能保证故障期间不丢数据。
+- 区分接收、处理、每个目标确认、重试耗尽、容量丢弃和活动告警。查看 Worker 报告是否新鲜；离线报告不代表当前健康。
+- 统一抓取管理端口的 `/metrics`，Worker 状态来自控制报告；**Worker 接入端口不提供 `/metrics`**。使用系统设置中的监控配置，按部署方式配置 Prometheus / Alertmanager。
+- 分别检查逻辑队列预算、区域预留与真实磁盘余量。不能把日志、master.key 或检查点当作缓存删除。
+- 故障持续期间，扩大队列不能保证不丢数据；还需结合上游背压、暂停接入和目标恢复安排。
 
-## 备份与升级
+## 升级到 0.5.3
 
-1. 阅读[下载与版本记录](https://flowport.pages.dev/changelog/)，核对所有节点版本与兼容边界。
-2. 停止对应服务或 Worker，备份完整数据目录（包括 Lookup 资源文件与版本引用）、`master.key`、`/etc/flowport/flowport.env` 及实际使用的环境配置。备份包含敏感内容，应限制访问。
-3. 从官网下载同版本安装包及校验清单，核对后升级。保留原数据目录与密钥。
-4. 启动后检查版本、登录、Worker 已安装版本、队列恢复、目标收据与告警。多 Worker 部署协调升级管理端及全部 Worker。
+0.5.3 保持控制协议 **v8**、检查点格式 **3**。更早的 v6 协议与 v8 不兼容，管理端与全部执行 Worker 须协调升级。旧积压沿用原重试次数，升级后可能立即耗尽；先阅读[交付策略](delivery.md)和[完整版本说明](https://flowport.pages.dev/changelog/)。
 
-0.2.0 使用控制协议 v6 和检查点格式 3，管理端与所有 Worker 必须协调升级。旧程序拒绝不支持的协议或格式。需要回退时恢复升级前的完整备份，并核对升级后新接收数据的处理情况；仅替换旧二进制不是完整回滚。缓存、上下文和聚合的内存状态不包含在备份中，重启或迁移后清空；已入队的处理结果继续恢复和重试。
+1. 核对版本、积压、失败次数与各区域容量，安排必要的接入间断。
+2. 停止相应服务，备份每个节点**整个数据目录**、master.key、Lookup 资源及实际使用的环境配置，包括 `/etc/flowport/flowport.env`。
+3. 从[官网下载页](https://flowport.pages.dev/downloads/)获取同版本包与 SHA256SUMS，核对后安装，保留原数据目录与密钥。
+4. 启动后检查版本、登录、Worker 安装状态、队列恢复、目标收据与告警，再验证一条真实数据。
 
-一个数据目录只能有一个有效写入实例。不要在进程仍写入时复制部分日志、删除密钥或让不同 Worker 共用同一数据目录。队列不跨节点复制。
+```sh
+sudo systemctl stop flowport
+# 按官方指南完成完整备份后，再安装新包
+sudo apt install ./flowport_0.5.3_linux_amd64.deb
+collectway -version
+sudo journalctl -u flowport -n 50
+```
+
+回退需恢复升级前完整备份，并考虑升级后新接收的数据；只换回旧二进制不构成完整回退。同一数据目录只能有一个有效写入实例，不能让多个 Worker 同时使用备份副本投递。
+
+## 内网读取
+
+默认拒绝内网 HTTP 读取。私网 Prometheus、Kubernetes、HTTP Client、Schema Registry、Lookup 等需要管理员在管理端及相关 Worker 上配置必要 CIDR。显式启动参数或非空环境变量优先于界面设置。来源、API Key 或 MCP 不能自行扩大此策略。
 
 ## 版本与授权
 
-官网下载的社区包默认单 Worker。商业集群需要发行方提供的商业构建、内置可信公钥与绑定当前集群的离线 License；公共社区二进制不能仅靠导入 License 变为商业集群版。参见[版本说明](https://flowport.pages.dev/editions/)及[集群文档](https://flowport.pages.dev/docs/cluster/)。
-
-## 0.2.1：Kafka 历史数据投递
-
-修复 Kafka 将事件时间用于固定 20 秒投递超时判断的问题，历史日志、指标、链路及其他 Point 数据不再因时间较旧而在发送前失败。Kafka 消息时间与编码载荷中的原始事件时间保持不变，适用于全部 Kafka 输出及复用该协议的服务预设。
-
-每次 Kafka 发送由 config.timeout_seconds 控制，默认 20 秒、范围 1–120 秒，并遵守上层更短的取消或截止时间。重试从新一次发送开始计时；发送失败仍保留原队列和处理结果，不通过改写事件时间或清空积压恢复。
-
-0.2.1 沿用控制协议 v6 和检查点格式 3。停止服务并备份完整数据目录、master.key、Lookup 资源与环境配置后升级管理端及全部 Worker。恢复原数据目录后，保留的 Kafka 积压自动重试；已被 FIFO 淘汰的数据无法恢复。目标 Broker 或云服务自身的时间范围与保留策略仍适用。
+社区包提供单本机 Worker。商业集群需要发行方提供、包含可信公钥的商业构建和匹配的授权；公共社区二进制不能仅通过导入 License 变成商业集群。详见[版本与授权](https://flowport.pages.dev/editions/)。

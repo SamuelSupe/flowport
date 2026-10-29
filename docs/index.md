@@ -1,32 +1,38 @@
-# 文档目录 / Documentation
+# FlowPorts documentation · 文档导航
 
-[English](../README.md) · [简体中文](../README.zh-CN.md) · [繁體中文](../README.zh-TW.md) · [日本語](../README.ja.md) · [한국어](../README.ko.md)
+**0.5.3** · [Website / 官网](https://flowport.pages.dev/) · [Downloads / 下载](https://flowport.pages.dev/downloads/) · [Release notes / 更新记录](https://flowport.pages.dev/changelog/#v0-5-3)
 
-完整产品文档由 Cloudflare 官网维护。GitHub 文档说明当前产品行为与入口，不包含实现源码。文档基线为 0.2.0；最新版本以官网为准。
+Connect sources, process data and deliver it to your observability and analytics systems.
+连接来源、处理数据，再发送到观测与分析系统。
 
-| 内容 / Topic | 简体中文 | English |
-| --- | --- | --- |
-| 官网 / Website | [首页](https://flowport.pages.dev/) | [Home](https://flowport.pages.dev/en/) |
-| 安装与快速开始 / Getting started | [指南](https://flowport.pages.dev/docs/) | [Guide](https://flowport.pages.dev/en/docs/) |
-| Pipeline | [处理指南](https://flowport.pages.dev/docs/pipeline/) | [Processing](https://flowport.pages.dev/en/docs/pipeline/) |
-| 队列与交付 / Queues and delivery | [交付指南](https://flowport.pages.dev/docs/delivery/) | [Delivery](https://flowport.pages.dev/en/docs/delivery/) |
-| 集成目录 / Integrations | [目录](https://flowport.pages.dev/integrations/) | [Catalog](https://flowport.pages.dev/en/integrations/) |
-| 集成配置 / Integration configuration | [指南](https://flowport.pages.dev/docs/integrations/) | [Guide](https://flowport.pages.dev/en/docs/integrations/) |
-| 扩展集成 / Extended integrations | [指南](https://flowport.pages.dev/docs/enterprise/) | [Guide](https://flowport.pages.dev/en/docs/enterprise/) |
-| Worker 集群 / Worker clusters | [指南](https://flowport.pages.dev/docs/cluster/) | [Guide](https://flowport.pages.dev/en/docs/cluster/) |
-| 管理 API 与 MCP / Management API and MCP | [接口指南](https://flowport.pages.dev/docs/api/) | [API guide](https://flowport.pages.dev/en/docs/api/) |
-| 常见问题 / FAQ | [问题与边界](https://flowport.pages.dev/docs/faq/) | [Questions and limits](https://flowport.pages.dev/en/docs/faq/) |
-| 版本与授权 / Editions | [说明](https://flowport.pages.dev/editions/) | [Editions](https://flowport.pages.dev/en/editions/) |
-| 下载 / Downloads | [Linux 安装包](https://flowport.pages.dev/downloads/) | [Linux packages](https://flowport.pages.dev/en/downloads/) |
-| 版本清单 / Manifest | [版本与校验值](https://flowport.pages.dev/downloads/manifest/) | [Versions and checksums](https://flowport.pages.dev/en/downloads/manifest/) |
-| 更新记录 / Changelog | [版本记录](https://flowport.pages.dev/changelog/) | [Release notes](https://flowport.pages.dev/en/changelog/) |
+## Start here · 从这里开始
 
-其他阅读版：[繁體中文](https://flowport.pages.dev/zh-TW/docs/) · [日本語](https://flowport.pages.dev/ja/docs/) · [한국어](https://flowport.pages.dev/ko/docs/)。
+- [第一条数据，从接入到送达](getting-started.md) — 安装、初始化、保存草稿、添加目标、发布与验证。
+- [交付、容量与恢复](delivery.md) — 接入确认、有限重试、通道隔离、丢弃与恢复边界。
+- [运维与升级](operations.md) — 监控、备份、版本兼容与内网读取策略。
 
-## 0.2.0 使用指南
+## Choose your language · 选择语言
 
-| 内容 | 简体中文 | English | 繁體中文 | 日本語 | 한국어 |
+| Language | Product overview | Dataflows | Lookup | Pipeline | Full online docs |
 | --- | --- | --- | --- | --- | --- |
-| Lookup 与完整富化示例 | [Lookup 数据富化](zh-CN/lookup.md) | [Lookup enrichment](en/lookup.md) | [Lookup 資料富化](zh-TW/lookup.md) | [Lookup データ補完](ja/lookup.md) | [Lookup 데이터 보강](ko/lookup.md) |
-| 缓存、上下文与窗口聚合 | [缓存与窗口](zh-CN/pipeline.md) | [Cache and windows](en/pipeline.md) | [快取與視窗](zh-TW/pipeline.md) | [キャッシュとウィンドウ](ja/pipeline.md) | [캐시와 창](ko/pipeline.md) |
-| 场景模板与配置导入导出 | [场景模板与导入导出](zh-CN/flows.md) | [Templates and import/export](en/flows.md) | [場景範本與匯入匯出](zh-TW/flows.md) | [テンプレートとインポート／エクスポート](ja/flows.md) | [템플릿과 가져오기/내보내기](ko/flows.md) |
+| English | [Overview](../README.md) | [Flows](en/flows.md) | [Lookup](en/lookup.md) | [Pipeline](en/pipeline.md) | [Read online](https://flowport.pages.dev/en/docs/) |
+| 简体中文 | [产品介绍](../README.zh-CN.md) | [数据流](zh-CN/flows.md) | [Lookup](zh-CN/lookup.md) | [Pipeline](zh-CN/pipeline.md) | [在线文档](https://flowport.pages.dev/docs/) |
+| 繁體中文 | [產品介紹](../README.zh-TW.md) | [資料流](zh-TW/flows.md) | [Lookup](zh-TW/lookup.md) | [Pipeline](zh-TW/pipeline.md) | [線上文件](https://flowport.pages.dev/zh-TW/docs/) |
+| 日本語 | [製品紹介](../README.ja.md) | [データフロー](ja/flows.md) | [Lookup](ja/lookup.md) | [Pipeline](ja/pipeline.md) | [オンライン文書](https://flowport.pages.dev/ja/docs/) |
+| 한국어 | [제품 소개](../README.ko.md) | [데이터 흐름](ko/flows.md) | [Lookup](ko/lookup.md) | [Pipeline](ko/pipeline.md) | [온라인 문서](https://flowport.pages.dev/ko/docs/) |
+
+The online documentation includes installation, integrations, delivery, clustering and API guides in all five languages. The three short guides above are in Simplified Chinese.
+
+官网提供五种语言的安装、集成、交付、集群和 API 指南。上方三篇简明指南使用简体中文。
+
+## Reference · 参考
+
+- [Source and Destination catalog / 接入与发送目录](https://flowport.pages.dev/docs/integrations/)
+- [Delivery and recovery / 交付与恢复](https://flowport.pages.dev/docs/delivery/)
+- [Cluster deployment / 集群部署](https://flowport.pages.dev/docs/cluster/)
+- [Editions and licensing / 版本与授权](https://flowport.pages.dev/editions/)
+- [Questions and documentation feedback / 问题与文档反馈](https://github.com/SamuelSupe/flowport/issues/new/choose)
+
+This repository contains public product documentation and illustration assets. Product source, website source, source history and installation packages are maintained separately. Downloads and release notes are published on the official website.
+
+本仓库只维护公开产品文档和展示素材；源码、源码历史与安装包独立管理，下载及版本说明以官网为准。

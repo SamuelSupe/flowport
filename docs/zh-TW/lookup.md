@@ -1,14 +1,14 @@
 # Lookup 資料擴充
 
-[FlowPort 0.2.0](../../README.zh-TW.md) · [使用指南](https://flowport.pages.dev/zh-TW/docs/pipeline/)
+[FlowPorts 0.5.3](../../README.zh-TW.md) · [Docs](../index.md) · [Website](https://flowport.pages.dev/zh-TW/docs/)
 
 Lookup 提供可管理、可同步、可版本化的本機查詢。管理端取得完整快照並驗證，Worker 下載不可變檔案，不保存外部來源憑證；事件處理時不連接遠端服務。維持單一執行檔，不新增資料庫或排程服務。
-
-以下畫面於 2026-10-20 使用隔離實例與合成資料，從 0.2.0 候選構建的英文介面拍攝。所示介面已包含於 0.2.0，截圖清單保留原始拍攝構建資訊。地址及數值僅為範例，可點選圖片放大。
 
 ## 建立與使用
 
 在 Lookup 頁建立資源，選擇上傳、HTTP(S)、S3 相容儲存、PostgreSQL 或 MySQL。上傳 UTF-8 CSV、CSV.GZ 或自行提供的 MMDB。CSV 欄名必須唯一且非空，內容以字串處理。資源頁顯示試查、同步狀態、版本、引用資料流及 Worker 實際版本。
+
+不同 Lookup 資源可並行建立，成功儲存的資源會獨立保留並在重新啟動後復原。修改同一資源時須使用目前修訂；遇到版本衝突應重新載入再編輯，避免覆蓋其他修改。已成功儲存的更新不會因背景維護或歷史版本回收而回退；重新成為目前版本的資料會繼續保留。
 
 在 Pipeline 面板新增繫結，選擇自動更新或固定版本，明確指定 Field/Tag 輸入、查詢欄及輸出對應。插入函式後可移至指令碼所需位置。名稱必須是字串常數，函式執行同一繫結並回傳是否符合。正常儲存草稿再發佈。
 
@@ -19,10 +19,6 @@ Lookup 提供可管理、可同步、可版本化的本機查詢。管理端取�
 在左側搜尋並選取資源。「資源設定」只顯示目前來源需要的欄位，驗證、TLS 及進階參數預設收合；「試查」選擇查詢欄位並輸入值，以表格查看結果和實際版本；「版本與狀態」集中查看歷史版本、Worker 安裝情況與引用資料流。同步頻率可選常用週期或自訂。離開時會提示尚未儲存的修改，儲存後才能上傳、同步或回復版本。
 
 編輯長表單時，儲存操作列會保持可見。新增資源後會標示下一步上傳或同步；上傳成功或首次手動同步後，自動進入試查。已儲存連線位址中的星號代表保留原值。驗證請求標頭接受空物件或值全部為字串的 JSON 物件。
-
-![Lookup 資源頁集中管理來源設定、目前版本及同步狀態；進階選項預設收合。](https://flowport.pages.dev/assets/screenshots/lookup-resource.webp)
-
-*Lookup 資源頁集中管理來源設定、目前版本及同步狀態；進階選項預設收合。*
 
 ## 完整範例：補充服務歸屬
 
@@ -49,10 +45,6 @@ Lookup 提供可管理、可同步、可版本化的本機查詢。管理端取�
 {{code:2}}
 
 資源頁試查只驗證查詢資料，此時還沒有將資源接入資料流。
-
-![試查以 service=checkout 精確比對，傳回團隊、業務等級及成本中心，並顯示實際資料版本。](https://flowport.pages.dev/assets/screenshots/lookup-query.webp)
-
-*試查以 service=checkout 精確比對，傳回團隊、業務等級及成本中心，並顯示實際資料版本。*
 
 ### 3. 在 Pipeline 中繫結資源
 
@@ -83,10 +75,6 @@ Lookup 提供可管理、可同步、可版本化的本機查詢。管理端取�
 | `cost_center` | Field | `cost_center` | `UNKNOWN` |
 
 `team` 和 `level` 寫入 Tag，供後續分流使用；`cost_center` 寫入一般欄位。
-
-![Pipeline 繫結讀取 service 欄位，將查詢欄明確對應至 team、business_level 與 cost_center Tag。](https://flowport.pages.dev/assets/screenshots/lookup-binding.webp)
-
-*Pipeline 繫結讀取 service 欄位，將查詢欄明確對應至 team、business_level 與 cost_center Tag。*
 
 ### 4. 插入指令碼呼叫
 
@@ -119,10 +107,6 @@ Lookup 提供可管理、可同步、可版本化的本機查詢。管理端取�
 在「處理後」檢查欄位及 Tag，切換到「Lookup」查看實際資料版本、符合列和診斷。未符合不會自動篩除，預設值也不會將未符合變為符合。
 
 「僅補充缺少的值」會保留已有的同名欄位或 Tag，空字串也算已有值。若查詢表應覆寫原值，將寫入規則改為「覆寫已有值」。
-
-![樣本工作台顯示本次使用的 Lookup 資料版本與命中列；預覽不會投遞業務資料。](https://flowport.pages.dev/assets/screenshots/lookup-preview.webp)
-
-*樣本工作台顯示本次使用的 Lookup 資料版本與命中列；預覽不會投遞業務資料。*
 
 ### 6. 依結果分流或篩選
 
@@ -204,3 +188,17 @@ Lookup 自動同步以 `system` 操作者寫入稽核。Worker 狀態包含自�
 
 
 Point 鍵名唯一；輸出名稱不可重複，包含 Field/Tag 之間。僅補缺失保留同名的既有欄位或 Tag；覆寫時依目標類型寫入。MySQL 一致快照要求 InnoDB 等支援交易快照的資料表。
+
+
+建立索引超過記憶體預算時，Store 會回收沒有活動工作階段的快取並重試一次，活動中的索引及快照保持可用。回收快取不刪除持久化資源版本，也不改變佇列批次固定的版本；活動用量仍超預算時繼續拒絕請求。
+
+
+同一資料流的多個綁定會按同時使用校驗容量。
+
+Worker 正常維護每分鐘檢查已載入 Lookup 快取，釋放閒置超過 5 分鐘且沒有活動查詢工作階段的內容與索引；記憶體壓力仍會立即回收閒置快取。回收不刪除不可變版本檔案，也不改變佇列固定版本；後續使用同版本時按需重新載入。
+
+試查結果對應畫面顯示的實際資料版本。偵測到新版本時會清除舊結果；欄位結構未變時保留查詢設定，結構變更時重設輸入鍵和回傳欄。延遲回傳的資源清單不會覆蓋正在填寫的新資源。
+
+候選解析、索引驗證、加密與下載讀取移至佇列中繼資料鎖外，提交前重查修訂、目前版本與活動綁定；衝突保留舊版本。大型 HTTP 下載最多同時 1 個，內容與索引仍共用 256 MiB 預算。
+
+內網 HTTP 採集及診斷須在每個執行節點設定 `-read-egress-allow-cidrs` / `FLOWPORT_READ_EGRESS_ALLOW_CIDRS`；API/MCP 不能覆寫。相關管理端與 Worker 須全部升級。以 `-trusted-proxy-cidrs` / `FLOWPORT_TRUSTED_PROXY_CIDRS` 設定可信來源 IP 與 Secure Cookie。接入埠不再提供 /metrics。詳見[讀取策略](https://flowport.pages.dev/zh-TW/docs/#configure)及[可信代理](https://flowport.pages.dev/zh-TW/docs/)。

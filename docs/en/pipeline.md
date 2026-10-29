@@ -1,10 +1,10 @@
 # Using Pipeline
 
-[FlowPort 0.2.0](../../README.md) · [Usage guides](https://flowport.pages.dev/en/docs/pipeline/)
+[FlowPorts 0.5.3](../../README.md) · [Docs](../index.md) · [Website](https://flowport.pages.dev/en/docs/)
 
 FlowPort uses GuanceCloud Platypus's Go executor, not Vector VRL. Source, canvas and shortcuts views edit the same per-category script; .ppl import/export is supported. Failed editor resources can be retried without discarding the draft. The work area stays at least 600px high; total editor height is at least 720px and grows to 80% of tall viewports. Panels scroll independently.
 
-These screenshots were captured on 2026-10-20 from the 0.2.0 release candidate in English, using an isolated instance and synthetic data. The captured interface is included in 0.2.0; capture build provenance is retained in the screenshot manifest. Addresses and counters are illustrative; select an image to view it full size.
+The per-record wall-clock limit remains 100 ms. An accepted input batch gets at most three attempts: the first two budget failures retain it, roll back candidate state and wait 1 and 2 seconds; a third failure releases that batch as pipeline_error and records the processing failure and discarded bytes. The count survives restart. Retries keep the queued version and FIFO rules. Exhausted Worker shared bytes or scope slots retain input for retry; the 8 MiB per-scope limit, parsing, type and output errors still release input.
 
 ## Editing and sample preview
 
@@ -17,19 +17,7 @@ These screenshots were captured on 2026-10-20 from the 0.2.0 release candidate i
 
 Before means decoded Points, not the original JSON. Raw JSON exposes the complete before/results response, and copying retains the original numeric text. Field tables show 50 entries per page. Drops come from executor reports, not input minus output; multi-record outputs are not paired by position. Request duration includes network and service time.
 
-HTTP json/ndjson/text are ingestion formats; sample debugging uses JSON. Formatting and display preserve large integers and nanosecond lexemes. Formatting supports at most 64 nesting levels; deeper JSON can still be submitted directly. Changed input, script or category marks old results stale. Parsing or execution errors can be corrected and rerun.
-
-![The canvas shows a Lookup call, Tag extraction and healthcheck filtering. Zoom controls bring the full workflow into view.](https://flowport.pages.dev/assets/screenshots/pipeline-canvas.webp)
-
-*The canvas shows a Lookup call, Tag extraction and healthcheck filtering. Zoom controls bring the full workflow into view.*
-
-![Source view edits the same Platypus script: call lookup("service_info"), extract Tags and filter healthcheck records.](https://flowport.pages.dev/assets/screenshots/pipeline-source.webp)
-
-*Source view edits the same Platypus script: call lookup("service_info"), extract Tags and filter healthcheck records.*
-
-![The real Go executor processes two samples: one output and one filtered record, with output fields and Tags. Samples are not delivered.](https://flowport.pages.dev/assets/screenshots/pipeline-debug.webp)
-
-*The real Go executor processes two samples: one output and one filtered record, with output fields and Tags. Samples are not delivered.*
+HTTP json/ndjson/text are ingestion formats; sample debugging uses JSON. Formatting and display preserve large integers and nanosecond lexemes. Formatting and backend JSON decoding both support at most 64 nesting levels. Changed input, script or category marks old results stale. Parsing or execution errors can be corrected and rerun.
 
 ## Tags and filtering
 
@@ -55,7 +43,7 @@ Current failure handling and migration: [FlowPort](https://flowport.pages.dev/en
 
 ## Versions and failure release
 
-From 0.1.16, send failures stay in the normal local queue and retry after 1, 2, 4, 8, 16, 32 and then at most every 60 seconds. Authentication, configuration, HTTP413, rate limits and incomplete receipts retain their branch. Healthy targets continue independently. Decode/Pipeline failures still release the input. There is no separate failed-record page, partial resend, 413 splitting or manual replay.
+Intake acknowledgment means durable local enqueue only. Each destination defaults to 5 retries after the first attempt (configurable 0–100). Exhaustion irreversibly discards unacknowledged data; there is no dead-letter payload or manual replay. Full input rejects new data; full output evicts by FIFO only within that channel. Shrinking preserves old backlog while draining. Processing failures may also release input. Publishing does not prove Worker installation or downstream receipt. Check the actual downstream content.
 
 Retry preserves the processed body, destination ID and delivery identity. Republish the same destination ID to use its newly published connection settings on the next attempt, without rerunning Pipeline or new routing. If the new publication removes that target, its queued branch retains its original connection. Counters remain attributed to the original input version. Editing a draft or saving a Destination alone does not update backlog.
 
@@ -68,7 +56,7 @@ Previews the current draft and saved destination signal filters for up to 100 ou
 
 ## Lookup
 
-Lookup uses local immutable data with batch-pinned versions. Unavailable resources retain queued input. See [Lookup](lookup.md). Current control protocol v6 and checkpoint format 3 require coordinated upgrades and a full pre-upgrade backup for downgrade.
+Lookup uses local immutable data with batch-pinned versions. Unavailable resources retain queued input. See [Lookup](lookup.md). Current control protocol v8 and checkpoint format 3 require coordinated upgrades and a full pre-upgrade backup for downgrade.
 
 
 ## Cache and windows
@@ -78,10 +66,6 @@ Open **Cache and windows** in Pipeline, select an example, insert it and adapt t
 Bounded memory is shared across batches only within **Worker × flow publication × input category**. Restarting or moving Workers clears it. There is no global deduplication, cross-Worker aggregation or exactly-once guarantee. Publishing starts new state; the old publication drains accepted inputs before flushing its final partial aggregate. Stopping does the same. After one hour without successfully processed input, a scope flushes remaining aggregates and is reclaimed; unmatched context is discarded. Deleting a flow clears its memory.
 
 Each preview starts with fresh isolated state and flushes partial aggregates at the end (`stateful_preview=true`). It never accesses live state. Use a published flow and a real destination to verify timing, cross-batch state and restart behavior.
-
-![The cache and windows panel offers insertable examples and explains state isolation, capacity limits and restart clearing.](https://flowport.pages.dev/assets/screenshots/pipeline-stateful.webp)
-
-*The cache and windows panel offers insertable examples and explains state isolation, capacity limits and restart clearing.*
 
 ### Short-term deduplication
 
@@ -129,3 +113,26 @@ The preview flushes one metric: measurement `requests`, Tag `service=api`, field
 Budgets conservatively account for strings, buffered Points and index overhead; they are not RSS limits. Transient memory also includes candidate state for up to eight parallel batches, decoded input and output. Invalid arguments, missing group keys, wrong types or capacity limits fail explicitly and follow the normal Pipeline policy of releasing failed input.
 
 State changes commit only when results for the whole batch, including all CDC chunks, enter the queue successfully. Failed batches retain no partial changes. Failed timer enqueue retains the window and reports a Worker error until retry succeeds. Queued output uses ordinary durable delivery retries, survives restart and is not aggregated again. In-memory cache, context and aggregates are excluded from backups and lost on restart. Accepted but unprocessed inputs resume with fresh state, so results can differ from an uninterrupted run.
+
+Worker drain and flow deletion wait for in-flight processing and final aggregate delivery. If the final window cannot be queued, an empty durable queue does not permit drain confirmation or deletion; the window is retained for retry. Process exit still clears in-memory state and does not replace online draining before shutdown.
+
+Each admitted SQL CDC input is decoded in bounded chunks and atomically replaced only after that input succeeds. A PostgreSQL/MySQL transaction above 32 MiB consists of multiple admitted inputs; their Pipeline commits are independent and their shared transfer receipt waits for every input.
+
+State scopes for different flows, published revisions or categories can proceed while another scope commits to disk. Each scope retains ordered processing and publishes candidate state only after queue commit succeeds. Concurrent growth reserves the shared Worker budget first and releases the reservation on failure. Limits remain 8 MiB per scope and 64 MiB per Worker; state is volatile and requires explicit online draining before shutdown.
+
+
+## Admission, retries and resource boundaries
+
+Each context-window group expires after one hour without input, independently of activity in other groups. Idle keep_value groups are reclaimed after one hour; pending values first emit through normal durable output, including a partial count-only bucket below its count threshold. The next input starts a new total: keep_value is not permanent storage. The existing limits of 256 active windows, 4096 aggregation groups per bucket and memory budgets remain. Only modified aggregation groups are copied; cancellation or persistence failure does not publish candidate state. Compiled scripts are evicted individually.
+
+
+Pipeline debug, connection diagnostics, save and publish use the current source configuration, including an open advanced JSON edit. Invalid advanced JSON blocks debug instead of falling back to the previous configuration.
+
+
+Ordinary Pipeline output and timer/final aggregation windows are prepared independently within each destination’s byte and batch quotas. An oversized branch or trimmed output prefix cannot fail another channel that has room. A single oversized branch does not clear existing backlog. Retained outputs, capacity-discard counters, input completion and cursor receipts commit in one WAL transaction. In-flight data remains protected. A quota change during preparation requires a fresh plan; a failed write retains the input or window without advancing counters or cursors.
+
+Legacy inputs without installed capacity reservations still use the legacy total output-preparation budget. Exceeding it terminates the input with `pipeline/output_limit`, durably records a processing failure and completes its receipt in order; it does not retry indefinitely as a storage failure. With installed isolation, oversized branches continue to be discarded only in their own channel. A quota change during preparation retains the input or window for fresh preparation and logs at debug level. Actual storage failures still retain data and report an error.
+
+For a channel that is not draining after a quota reduction, trimming an output prefix also evicts older, non-in-flight backlog in FIFO order. Timer/final windows follow existing backlog, so all earlier evictable entries in that channel are terminated, even if the retained window suffix and some old entries could still fit. This preserves the newest FIFO suffix. A single oversized branch does not advance this boundary or clear old backlog. In-flight branches remain protected; when they occupy the quota, only new branches in that channel are discarded, without blocking other destinations that have room.
+
+Pipeline preview and publish errors retain line and column. Recognized unknown functions, invalid argument counts and incompatible types also return a safe reason (`pipeline_compile_error_reason` with nested cause codes). Other compilation errors retain `pipeline_compile_error`; those without a position use `pipeline_compile_failed`. Execution failures use `pipeline_runtime_error`, or `pipeline_runtime_failed` without a position. Positions are in `params[0]` and `params[1]`, and reasons in `causes`. The workbench translates each level; plain-text clients receive safe explanations too. Script literals, input values and raw third-party errors are not exposed.

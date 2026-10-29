@@ -1,0 +1,24 @@
+name: Documentation or product question / 文档与使用问题
+description: Suggest a correction or ask how a documented workflow works / 文档修正与使用咨询
+title: "[Docs] "
+body:
+  - type: markdown
+    attributes:
+      value: "All five documentation languages are welcome. 本仓库公开可见，请先移除凭证和敏感数据。"
+  - type: input
+    id: page
+    attributes:
+      label: Documentation URL / 文档链接
+      description: Link the relevant page or section when available.
+  - type: input
+    id: version
+    attributes:
+      label: Version and language / 版本与语言
+      placeholder: "0.5.3 / 简体中文"
+  - type: textarea
+    id: question
+    attributes:
+      label: Question or suggested correction / 问题或修改建议
+      description: Describe what you are trying to do and which step is unclear.
+    validations:
+      required: true

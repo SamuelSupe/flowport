@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Documentation / 官方文档
+    url: https://flowport.pages.dev/docs/
+    about: Installation, dataflows, delivery and operations in five languages.
+  - name: Downloads and release notes / 下载与版本说明
+    url: https://flowport.pages.dev/downloads/
+    about: Official Linux packages and SHA-256 checksums.
