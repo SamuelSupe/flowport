@@ -1,17 +1,18 @@
 # 运维与升级
 
-[FlowPorts 0.5.3](../README.zh-CN.md) · [运维文档](https://flowport.pages.dev/docs/delivery/) · [集群指南](https://flowport.pages.dev/docs/cluster/)
+[FlowPorts 0.5.8](../README.zh-CN.md) · [运维文档](https://flowport.pages.dev/docs/delivery/) · [集群指南](https://flowport.pages.dev/docs/cluster/)
 
 ## 日常检查
 
 - 区分接收、处理、每个目标确认、重试耗尽、容量丢弃和活动告警。查看 Worker 报告是否新鲜；离线报告不代表当前健康。
 - 统一抓取管理端口的 `/metrics`，Worker 状态来自控制报告；**Worker 接入端口不提供 `/metrics`**。使用系统设置中的监控配置，按部署方式配置 Prometheus / Alertmanager。
 - 分别检查逻辑队列预算、区域预留与真实磁盘余量。不能把日志、master.key 或检查点当作缓存删除。
+- TCP 输入队列满时，查看运行视图的最近错误和 `collectway_flow_source_rejected_records_total`。确认输入区及卡住的目标输出区占用。
 - 故障持续期间，扩大队列不能保证不丢数据；还需结合上游背压、暂停接入和目标恢复安排。
 
-## 升级到 0.5.3
+## 升级到 0.5.8
 
-0.5.3 保持控制协议 **v8**、检查点格式 **3**。更早的 v6 协议与 v8 不兼容，管理端与全部执行 Worker 须协调升级。旧积压沿用原重试次数，升级后可能立即耗尽；先阅读[交付策略](delivery.md)和[完整版本说明](https://flowport.pages.dev/changelog/)。
+0.5.8 使用控制协议 v9、检查点格式 3。先备份各节点的完整数据目录、master.key、Lookup 资源与环境配置，再协调更新管理端和全部 Worker。 另见[交付策略](delivery.md)和[完整版本说明](https://flowport.pages.dev/changelog/#v0-5-8)。
 
 1. 核对版本、积压、失败次数与各区域容量，安排必要的接入间断。
 2. 停止相应服务，备份每个节点**整个数据目录**、master.key、Lookup 资源及实际使用的环境配置，包括 `/etc/flowport/flowport.env`。
@@ -21,7 +22,7 @@
 ```sh
 sudo systemctl stop flowport
 # 按官方指南完成完整备份后，再安装新包
-sudo apt install ./flowport_0.5.3_linux_amd64.deb
+sudo apt install ./flowport_0.5.8_linux_amd64.deb
 collectway -version
 sudo journalctl -u flowport -n 50
 ```

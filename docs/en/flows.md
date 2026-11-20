@@ -1,12 +1,16 @@
 # Dataflow configuration and publishing
 
-[FlowPorts 0.5.3](../../README.md) · [Docs](../index.md) · [Website](https://flowport.pages.dev/en/docs/)
+[FlowPorts 0.5.8](../../README.md) · [Docs](../index.md) · [Website](https://flowport.pages.dev/en/docs/)
 
 Unfinished drafts may omit sources, destinations or destination allocations. Explicit quotas must remain positive and within the total budget. Saving does not start intake or change the running version. Publication requires complete targets and matching quotas. Implicit allocations are materialized at publication; adding a destination never silently redistributes manual quotas.
 
 After publishing, use Delivery verification in the runtime view. Wait for current-version installation, a ready source, fresh reports and an empty backlog. Start verification before sending real upstream data. Supported HTTP and DataKit sources offer a copyable example with a published-token placeholder. Compare new received batches, successfully processed batches and acknowledgments for every target. Send matching samples for each route and inspect downstream content. The guide does not send automatically or trace individual records. Stale or disconnected reports cannot confirm delivery; changes in version, Worker assignment, process instance or counters require a new verification. Refreshing or changing scope resets it. Protocol acknowledgment does not prove downstream business processing.
 
-> **0.5.0 policy change:** Retention and retry statements below are bounded by the new per-channel allowance (default 5 retries). Exhaustion automatically discards unconfirmed data, followed by at least 60 seconds of channel backoff and one probe batch. Historical attempts are retained. Upgrade all relevant nodes to protocol v8. See [channel delivery policy](https://flowport.pages.dev/en/docs/delivery/).
+> After the initial send, each destination defaults to five fast retries. When those retries are exhausted, unconfirmed data stays queued and the channel waits at least 60 seconds before probing one batch. New flows default to 256 MiB and 500 internal batches per Worker, partitioned between input and destinations. A full output keeps its upstream input queued. A full input rejects new intake.
+
+Existing TCP and UDP Socket listeners stay active when their Source settings are unchanged. After the Worker installs a Pipeline update, newly admitted records use the new version, even on an existing TCP connection. Queued batches keep their original version.
+
+When the input queue is full, TCP Socket, Syslog and StatsD close the affected connection and count decoded records refused before durable admission. See the rejection reason in the runtime view, source_rejected_records in the API and collectway_flow_source_rejected_records_total in Prometheus. Accepted backlog stays queued.
 
 
 Flow IDs are shown with a copy action at the top of the editor and runtime view. Signed-in administrators can explicitly show, hide and copy inbound Source tokens (including Vector). Draft and published credentials are separate; draft changes take effect only after publication and Worker installation. Tokens are shown only in the aggregate runtime view, not when viewing an individual Worker. Other upstream credentials remain masked. Ordinary flow reads and exports are sanitized; API Keys and MCP cannot reveal ingestion tokens.
@@ -45,7 +49,7 @@ Current failure handling and migration: [FlowPort](https://flowport.pages.dev/en
 
 Automatic placement uses permitted Workers, or restrict the eligible nodes explicitly. Push/shared consumption can run on multiple nodes; polling and some subscriptions use an exclusive lease. Network access, TLS files and cloud identity must exist on the executing Worker.
 
-New flows default to 256 MiB and 500 internal batches per Worker, allocated separately to input and each destination. The node defaults to 10 GiB and at most 10000 internal batches; reservations and historical usage must fit. Physical logs and checkpoints require additional space. Intake acknowledgment means durable local enqueue only. Each destination defaults to 5 retries after the first attempt (configurable 0–100). Exhaustion irreversibly discards unacknowledged data; there is no dead-letter payload or manual replay. Full input rejects new data; full output evicts by FIFO only within that channel. Shrinking preserves old backlog while draining. Processing failures may also release input. Publishing does not prove Worker installation or downstream receipt. Check the actual downstream content.
+Intake acknowledgment confirms local durable enqueue. Receiving and delivering are separate. After publishing, verify Worker installation and inspect a new record downstream.
 
 ## Drafts, publishing and versions
 
@@ -65,7 +69,7 @@ Pencil icons open Source configuration, Pipeline/category, Tag routing or the co
 
 ## Stopping and deletion
 
-Intake acknowledgment means durable local enqueue only. Each destination defaults to 5 retries after the first attempt (configurable 0–100). Exhaustion irreversibly discards unacknowledged data; there is no dead-letter payload or manual replay. Full input rejects new data; full output evicts by FIFO only within that channel. Shrinking preserves old backlog while draining. Processing failures may also release input. Publishing does not prove Worker installation or downstream receipt. Check the actual downstream content.
+Intake acknowledgment confirms local durable enqueue. Receiving and delivering are separate. After publishing, verify Worker installation and inspect a new record downstream.
 
 Once published, a dataflow ID remains a historical resource identity after deletion and cannot be reused. Create a new flow with a new ID to avoid inheriting Worker cursors, lease history or counters and skipping initial collection. Stopping and restarting the same flow still resumes its durable progress. A draft that was never published can reuse its ID after deletion.
 
@@ -79,7 +83,7 @@ Current failure handling and migration: [FlowPort](https://flowport.pages.dev/en
 From 0.1.19, a send that began before its branch was evicted by FIFO still records its eventual failure or confirmed success and updates destination health durably. It never restores the payload, reverses eviction counters or completes the receipt twice. The same branch can count as both FIFO-evicted and confirmed delivered; these counters cannot be subtracted to derive unique inputs. A late success on the effective connection can clear that target alert. Obsolete publication results cannot change current target health, and a late failure cannot recreate an alert for a removed target without backlog.
 
 
-## 0.1.21
+## 0.1.21 · Historical behavior from earlier releases
 
 Republish referring flows and wait for Worker installation. Backlog for the same destination ID retains its processed result and uses the new connection on subsequent retries. Old in-flight requests cannot be recalled; recovery may produce duplicates.
 
@@ -135,22 +139,6 @@ The publication success notice confirms that configuration was saved. Check conf
 
 ## Fixed capacity isolation
 
-The editor uses the flow name as its title and distinguishes unsaved edits, saved drafts, and the running configuration. In the destination step, Channel capacity groups the total budgets, allocated amounts, and input/output quotas. Edit bytes and batches on each region row. Publishing is blocked when allocation exceeds a budget or a quota is missing; expand the rules for eviction and shrinking details.
+Set `queue_capacity.input` and `queue_capacity.outputs` within the flow budgets. A full output retains the entire input or window until all required output regions can accept it. Each Worker displays the installed quotas, usage and oldest backlog. Lowering quotas keeps existing backlog while draining. Configure reserved capacity explicitly when adding destinations.
 
-A new flow defaults to 256 MiB and 500 batches; existing saved workspace defaults and explicit quotas are unchanged. Only fixed capacity isolation is supported. Configure `queue_capacity.input` and `queue_capacity.outputs` in the flow destination settings, save and publish. Missing quotas on a new publication split the byte budget and 500 batches equally among input and all targets; the editor materializes these defaults when saving. Existing explicit allocations never change automatically. New targets need explicit capacity. Quotas belong to Worker × flow × destination. Region sums must fit `queue_bytes` and `queue_capacity.batches`. Reservations plus unmigrated legacy backlog must fit each Worker's byte limit and 10000 internal batches. Multiple default flows may exceed the node batch limit; explicitly reduce their quotas because they are not reduced automatically. Unallocated capacity belongs to no channel; there is no borrowing.
-
-Before upgrading, run `collectway -queue-capacity-preflight -data-dir <Worker backup copy> -queue-bytes <node byte budget>` on each Worker backup copy, never the production data directory. It estimates reservations and missing record counts from metadata; it cannot verify payload integrity or predict future scheduling. Old immutable versions retain their original byte budget; each Worker automatically attempts a fixed reservation with 500 default batches. Existing reservations survive restarts and later upgrades; new targets need explicit capacity. Missing output counts are read outside the lock in bounded, durable steps (at most 64 outputs and approximately 32 MiB per step). Insufficient capacity, missing targets or unreadable payloads retain backlog and pause new intake until corrected. Sources differ in their ability to buffer. In-memory windows must drain before restart. Protocol v6 and v8 are incompatible: coordinate upgrades and expect possible intake interruption. Publication is not proof of Worker installation. Stopped flows retain reservations.
-
-Legacy backlog above a default region quota is reserved at the greater of quota and usage and enters draining after shrink. Excess input blocks new intake; excess output preserves old backlog but discards and counts newly produced branches for that channel. Preflight reports each region’s limit, usage and actual reservation; the node must fit the reservation. When an enabled flow moves away from a Worker, that Worker releases its reservation only after local backlog, in-flight requests and aggregation windows finish; reassignment reserves again. Globally disabled flows retain their reservations. Both the manager and Worker need this fix; older v8 Workers ignore the release instruction. The preparation deadline is checked between payload reads, so one disk read or durable commit can exceed it.
-
-Full input regions reject new intake without evicting outputs. HTTP/gRPC return retryable errors; acknowledging sources retain unacknowledged data, while UDP counts drops. DataKit, Firehose and CDC requests/transactions remain atomic. Cursor metadata pressure rejects intake instead of deleting all branches of older receipts.
-
-One WAL transaction replaces input with destination outputs and applies per-channel FIFO in original reception order. Splits, fanout, retries, cooldown and in-flight batches consume quota. An oversized indivisible branch discards itself without clearing old backlog. In-flight payloads are protected; if nothing can be freed, discard the new branch. Capacity discards do not consume send attempts or count as success. Record counts are stored in metadata. Cursors advance in order only after all branches terminate; CDC may have explicit data gaps.
-
-Shrinking preserves old backlog. While usage exceeds the new limit, the channel drains and handles new outputs as full; occupied reservation is released only as data drains. Removed targets retire until their old inputs, outputs and in-flight requests finish. New targets need explicit allocation. Failed growth/migration preflight retains the prior installed version. Shared capacity mode is no longer available.
-
-Runtime details show each Worker's effective version, usage, limits, actual reservations, oldest backlog and capacity discards. Capacity is separate from delivery health: ongoing eviction means a discard in the past 5 minutes, not cleared by successful delivery. Stale/offline reports are labeled as last reported state. Control protocol v8 requires all managers and relevant Workers to upgrade; manager publication does not prove Worker installation.
-
-Only logical capacity and eviction scope are isolated. Disk, CPU, network and Store writes remain shared; physical disk pressure may stop all node intake. Restart preserves quotas, ordering, attempts and counters.
-
-Capacity activation compares region IDs and quota values, independent of JSON key order. Effective values use destination names. Retiring channels continue to show their retained quota.
+[Capacity and delivery policy](https://flowport.pages.dev/en/docs/delivery/)

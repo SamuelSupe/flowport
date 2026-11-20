@@ -6,19 +6,18 @@
 
 Collect, process and route logs, metrics, traces and events through **Source → Pipeline → Destinations**.
 
-**[Website](https://flowport.pages.dev/en/) · [Get started](https://flowport.pages.dev/en/docs/) · [Linux downloads](https://flowport.pages.dev/en/downloads/) · [Release notes](https://flowport.pages.dev/en/changelog/#v0-5-3)**
+**[Website](https://flowport.pages.dev/en/) · [Get started](https://flowport.pages.dev/en/docs/) · [Linux downloads](https://flowport.pages.dev/en/downloads/) · [Release notes](https://flowport.pages.dev/en/changelog/#v0-5-8)**
 
-## New in 0.5.3
+## New in 0.5.8
 
-- Save an unfinished draft before configuring destinations or capacity allocations. Publishing still checks the complete configuration.
-- Create and select a destination directly in the flow editor. Keep your source and Pipeline settings as you go.
-- Verify new receipts, processing and acknowledgments from every destination after publishing. Old backlog and past successes do not count as this verification.
+- Existing TCP and UDP Socket listeners stay active when their Source settings are unchanged. After the Worker installs a Pipeline update, newly admitted records use the new version, even on an existing TCP connection. Queued batches keep their original version.
+- When the input queue is full, TCP Socket, Syslog and StatsD close the affected connection and count decoded records refused before durable admission. See the rejection reason in the runtime view, source_rejected_records in the API and collectway_flow_source_rejected_records_total in Prometheus. Accepted backlog stays queued.
 
 ## One path, from source to delivery
 
 | Collect | Transform | Deliver |
 | --- | --- | --- |
-| 72 Source types for application, infrastructure, database, broker and cloud data. | Parse and enrich with Pipeline, local Lookup data, tag routing and bounded cache/window state. | 48 Destination types, independent output channels and runtime delivery status. |
+| 72 Source types for application, infrastructure, database, broker and cloud data. | Parse and enrich with Pipeline, local Lookup data, tag routing and bounded cache/window state. | 49 Destination types, independent output channels and runtime delivery status. |
 
 [![FlowPort 0.5.3 in native Chrome: real HTTP records received, processed and acknowledged by a local receiver. Isolated test instance with synthetic data; credentials are masked.](docs/images/first-delivery-0.5.3.jpg)](docs/images/first-delivery-0.5.3.jpg)
 
@@ -41,13 +40,13 @@ Collect, process and route logs, metrics, traces and events through **Source →
 ## Know the delivery boundaries
 
 - Intake acknowledgment confirms durable acceptance on the current Worker, not destination delivery. Worker queues are independent and are not replicated.
-- Each destination defaults to **five retries after the initial send**. Exhaustion discards unacknowledged data without dead-letter replay. A failed channel then waits at least 60 seconds before probing one batch.
-- New flows default to **256 MiB and 500 internal batches per Worker**, partitioned between input and destinations. Full input rejects new intake; full output evicts only within that channel. Existing explicit quotas remain unchanged.
+- After the initial send, each destination defaults to five fast retries. When those retries are exhausted, unconfirmed data stays queued and the channel waits at least 60 seconds before probing one batch.
+- New flows default to 256 MiB and 500 internal batches per Worker, partitioned between input and destinations. A full output keeps its upstream input queued. A full input rejects new intake.
 - Protocol receipts do not prove downstream business processing. Lost acknowledgments can produce duplicates; there is no strict exactly-once or cross-destination transaction guarantee.
 
 ### Before upgrading
 
-0.5.3 uses control protocol **v8** and checkpoint format **3**. Back up complete node data, master.key, Lookup resources and environment configuration, then coordinate the manager and all executing Workers. Older backlog keeps its retry count. Private HTTP reads require the necessary per-node CIDR allowances.
+0.5.8 uses control protocol v9 and checkpoint format 3. Back up the complete data directories, master.key, Lookup resources and environment configuration on every node, then upgrade the manager and all Workers together.
 
 ## Questions and feedback
 

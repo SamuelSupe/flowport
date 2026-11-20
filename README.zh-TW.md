@@ -6,19 +6,18 @@
 
 將日誌、指標、追蹤與事件接入 **Source → Pipeline → Destinations**，在來源與觀測、分析系統之間完成處理和轉送。
 
-**[官網](https://flowport.pages.dev/zh-TW/) · [快速開始](https://flowport.pages.dev/zh-TW/docs/) · [Linux 下載](https://flowport.pages.dev/zh-TW/downloads/) · [版本說明](https://flowport.pages.dev/zh-TW/changelog/#v0-5-3)**
+**[官網](https://flowport.pages.dev/zh-TW/) · [快速開始](https://flowport.pages.dev/zh-TW/docs/) · [Linux 下載](https://flowport.pages.dev/zh-TW/downloads/) · [版本說明](https://flowport.pages.dev/zh-TW/changelog/#v0-5-8)**
 
-## 0.5.3 更新
+## 0.5.8 更新
 
-- 來源、目的端或容量分配尚未完成時，也能儲存草稿；發佈時再嚴格檢查完整設定。
-- 在資料流編輯器內直接建立並選取目的端，保留已填寫的來源與 Pipeline。
-- 發佈後驗證本次新增接收、成功處理與各目的端的新增確認；舊積壓和歷史成功不算本次結果。
+- Socket 來源設定相同時，原有 TCP 和 UDP 監聽器繼續執行。Worker 安裝新版後，透過既有 TCP 連線新入佇列的資料也使用新 Pipeline。積壓批次沿用入佇列時的版本。
+- 輸入佇列滿時，TCP Socket、Syslog 和 StatsD 關閉受影響的連線，並統計已解碼但未持久入佇列的資料。執行視圖顯示拒收原因，API 提供 source_rejected_records，Prometheus 提供 collectway_flow_source_rejected_records_total。已入佇列的積壓繼續保留。
 
 ## 從來源到送達，一條完整路徑
 
 | 接入 | 處理 | 傳送 |
 | --- | --- | --- |
-| 72 種 Source，涵蓋應用、基礎設施、資料庫、訊息系統與雲端服務。 | 透過 Pipeline 解析和轉換，使用本機 Lookup 補充資料，依 Tag 分流並支援有界快取與視窗。 | 48 種 Destination，目的端通道獨立投遞，在執行頁查看確認、積壓與異常。 |
+| 72 種 Source，涵蓋應用、基礎設施、資料庫、訊息系統與雲端服務。 | 透過 Pipeline 解析和轉換，使用本機 Lookup 補充資料，依 Tag 分流並支援有界快取與視窗。 | 49 種 Destination，目的端通道獨立投遞，在執行頁查看確認、積壓與異常。 |
 
 [![FlowPort 0.5.3 本機 Chrome 實拍：HTTP 資料完成接收、處理與本機目的端確認。使用隔離測試實例及合成資料，憑證維持遮罩。](docs/images/first-delivery-0.5.3.jpg)](docs/images/first-delivery-0.5.3.jpg)
 
@@ -41,13 +40,13 @@
 ## 清楚理解交付邊界
 
 - 接入確認僅表示目前 Worker 已持久接受，不等於目的端送達。各 Worker 佇列獨立，不跨節點複寫。
-- 目的端首次傳送後預設最多**重試 5 次**。耗盡即丟棄未確認資料，無死信重播；隨後至少等待 60 秒，再試投一批。
-- 新資料流預設每 Worker **256 MiB、500 個內部批次**，固定分配給輸入與各目的端。輸入滿時拒收；輸出滿時僅淘汰本通道。既有明確配額不自動改變。
+- 目的端首次傳送後預設快速重試 5 次。快速重試耗盡後保留未確認資料，通道至少等待 60 秒，再試投一批。
+- 新資料流預設每個 Worker 256 MiB 和 500 個內部批次，分配給輸入和各目的端。輸出區滿時保留原輸入，輸入區滿時拒收新資料。
 - 協定確認不等於下游業務處理完成。確認遺失可能導致重複，不保證嚴格僅傳送一次或跨目的端交易。
 
 ### 升級前
 
-0.5.3 使用控制協定 **v8**、檢查點格式 **3**。先備份各節點完整資料、master.key、Lookup 與環境設定，再協調更新管理端及全部執行 Worker。歷史積壓保留重試次數；內網 HTTP 讀取需逐節點設定必要 CIDR。
+0.5.8 使用控制協定 v9、檢查點格式 3。先備份各節點的完整資料目錄、master.key、Lookup 資源與環境設定，再協調更新管理端和全部 Worker。
 
 ## 問題與回饋
 

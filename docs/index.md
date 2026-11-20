@@ -1,6 +1,6 @@
 # FlowPorts documentation · 文档导航
 
-**0.5.3** · [Website / 官网](https://flowport.pages.dev/) · [Downloads / 下载](https://flowport.pages.dev/downloads/) · [Release notes / 更新记录](https://flowport.pages.dev/changelog/#v0-5-3)
+**0.5.8** · [Website / 官网](https://flowport.pages.dev/) · [Downloads / 下载](https://flowport.pages.dev/downloads/) · [Release notes / 更新记录](https://flowport.pages.dev/changelog/#v0-5-8)
 
 Connect sources, process data and deliver it to your observability and analytics systems.
 连接来源、处理数据，再发送到观测与分析系统。
@@ -8,7 +8,7 @@ Connect sources, process data and deliver it to your observability and analytics
 ## Start here · 从这里开始
 
 - [第一条数据，从接入到送达](getting-started.md) — 安装、初始化、保存草稿、添加目标、发布与验证。
-- [交付、容量与恢复](delivery.md) — 接入确认、有限重试、通道隔离、丢弃与恢复边界。
+- [交付、容量与恢复](delivery.md) — 接入确认、回压、慢速重试、TCP 拒收与恢复边界。
 - [运维与升级](operations.md) — 监控、备份、版本兼容与内网读取策略。
 
 ## Choose your language · 选择语言
