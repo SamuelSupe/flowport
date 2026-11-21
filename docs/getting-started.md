@@ -1,6 +1,6 @@
 # 第一条数据，从接入到送达
 
-[FlowPorts 0.5.8](../README.zh-CN.md) · [完整安装指南](https://flowport.pages.dev/docs/) · [English](https://flowport.pages.dev/en/docs/)
+[FlowPorts 0.5.9](../README.zh-CN.md) · [完整安装指南](https://flowport.pages.dev/docs/) · [English](https://flowport.pages.dev/en/docs/)
 
 ## 1. 安装与初始化
 
@@ -9,7 +9,7 @@
 ```sh
 sha256sum --ignore-missing -c SHA256SUMS
 # Debian / Ubuntu；ARM64 将 amd64 改为 arm64
-sudo apt install ./flowport_0.5.8_linux_amd64.deb
+sudo apt install ./flowport_0.5.9_linux_amd64.deb
 sudo systemctl status flowport
 sudo cat /var/lib/flowport/manager/setup-token
 ```

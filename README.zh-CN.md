@@ -6,12 +6,13 @@
 
 把日志、指标、链路与事件接入 **Source → Pipeline → Destinations**，在来源与观测、分析系统之间完成处理和转发。
 
-**[官网](https://flowport.pages.dev/) · [快速开始](https://flowport.pages.dev/docs/) · [Linux 下载](https://flowport.pages.dev/downloads/) · [版本说明](https://flowport.pages.dev/changelog/#v0-5-8)**
+**[官网](https://flowport.pages.dev/) · [快速开始](https://flowport.pages.dev/docs/) · [Linux 下载](https://flowport.pages.dev/downloads/) · [版本说明](https://flowport.pages.dev/changelog/#v0-5-9)**
 
-## 0.5.8 更新
+## 0.5.9 更新
 
-- Socket 来源设置相同时，原有 TCP 和 UDP 监听器继续运行。Worker 安装新版后，即使沿用原 TCP 连接，新入队记录也使用新版 Pipeline。积压批次沿用入队时的版本。
-- 输入队列满时，TCP Socket、Syslog 和 StatsD 关闭受影响的连接，并统计已解码但未持久入队的记录。运行视图显示拒收原因，API 提供 source_rejected_records，Prometheus 提供 collectway_flow_source_rejected_records_total。已入队积压继续保留。
+- 接入诊断区分拒收与解码丢弃。Kafka、对象通知、分页审计来源和 Kubernetes 列表在续读时保存或校验进度。
+- 投递保留有效的部分回执，只重试未确认记录。缺少协议回执的写出计入 sent_without_receipt。
+- 支持的目标将 Retry-After 与本地退避一并持久化。队头诊断显示实际重试时间。
 
 ## 从来源到送达，一条完整路径
 
@@ -46,7 +47,7 @@
 
 ### 升级前
 
-0.5.8 使用控制协议 v9、检查点格式 3。先备份各节点的完整数据目录、master.key、Lookup 资源与环境配置，再协调更新管理端和全部 Worker。
+0.5.9 使用控制协议 v9、检查点格式 3。升级前停止接入并备份各节点的数据、master.key、Lookup 和环境配置，再协调升级管理端与全部 Worker。回退时恢复升级前的备份。
 
 ## 问题与反馈
 

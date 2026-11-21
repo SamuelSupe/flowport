@@ -6,12 +6,13 @@
 
 로그, 메트릭, 트레이스와 이벤트를 **Source → Pipeline → Destinations**로 처리하여 관측 및 분석 시스템에 전달합니다.
 
-**[공식 사이트](https://flowport.pages.dev/ko/) · [시작하기](https://flowport.pages.dev/ko/docs/) · [Linux 다운로드](https://flowport.pages.dev/ko/downloads/) · [릴리스 노트](https://flowport.pages.dev/ko/changelog/#v0-5-8)**
+**[공식 사이트](https://flowport.pages.dev/ko/) · [시작하기](https://flowport.pages.dev/ko/docs/) · [Linux 다운로드](https://flowport.pages.dev/ko/downloads/) · [릴리스 노트](https://flowport.pages.dev/ko/changelog/#v0-5-9)**
 
-## 0.5.8 업데이트
+## 0.5.9 업데이트
 
-- Source 설정이 같으면 기존 TCP 및 UDP Socket 리스너가 계속 동작합니다. Worker가 새 버전을 설치하면 기존 TCP 연결에서도 새로 수락된 레코드는 새 Pipeline을 사용합니다. 대기 중인 배치는 기존 버전을 유지합니다.
-- 입력 큐가 가득 차면 TCP Socket, Syslog 및 StatsD는 해당 연결을 닫고 디코딩 이후 영속 큐에 들어가지 못한 레코드를 집계합니다. 실행 화면에서 거부 이유를 볼 수 있으며, API는 source_rejected_records, Prometheus는 collectway_flow_source_rejected_records_total을 제공합니다. 이미 수락된 배치는 큐에 보존됩니다.
+- 수집 진단에서 수집 거부와 디코딩 중 폐기를 구분합니다. Kafka, 객체 알림, 페이지 단위 감사 소스 및 Kubernetes 목록은 재개할 때 읽기 진행 상태를 저장하거나 검증합니다.
+- 유효한 부분 응답을 보존하고 미확인 레코드를 재시도합니다. 프로토콜 응답 없이 전송된 레코드는 sent_without_receipt로 집계합니다.
+- 지원되는 대상은 Retry-After와 로컬 백오프를 함께 영속화합니다. 큐 선두 진단에 실제 재시도 시각이 표시됩니다.
 
 ## 소스에서 전달까지 하나의 경로
 
@@ -46,7 +47,7 @@
 
 ### 업그레이드 전
 
-0.5.8은 제어 프로토콜 v9와 체크포인트 형식 3을 사용합니다. 각 노드의 전체 데이터 디렉터리, master.key, Lookup 리소스와 환경 설정을 백업한 뒤 관리자와 모든 Worker를 함께 업데이트하세요.
+0.5.9는 제어 프로토콜 v9와 체크포인트 형식 3을 사용합니다. 수집을 중지하고 각 노드의 데이터, master.key, Lookup 리소스와 환경 설정을 백업한 뒤 관리자와 모든 Worker를 함께 업데이트하세요. 롤백하려면 업데이트 전 백업을 복원하세요.
 
 ## 질문과 피드백
 

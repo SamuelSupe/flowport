@@ -6,12 +6,13 @@
 
 ログ、メトリクス、トレース、イベントを **Source → Pipeline → Destinations** で処理し、観測・分析システムへ転送します。
 
-**[公式サイト](https://flowport.pages.dev/ja/) · [はじめに](https://flowport.pages.dev/ja/docs/) · [Linux ダウンロード](https://flowport.pages.dev/ja/downloads/) · [リリースノート](https://flowport.pages.dev/ja/changelog/#v0-5-8)**
+**[公式サイト](https://flowport.pages.dev/ja/) · [はじめに](https://flowport.pages.dev/ja/docs/) · [Linux ダウンロード](https://flowport.pages.dev/ja/downloads/) · [リリースノート](https://flowport.pages.dev/ja/changelog/#v0-5-9)**
 
-## 0.5.8 の更新
+## 0.5.9 の更新
 
-- Source 設定が同じ場合、TCP と UDP の Socket リスナーは稼働を続けます。Worker が新版をインストールすると、既存の TCP 接続から新たにキューに入るレコードにも新しい Pipeline を適用します。待機中のバッチは元のバージョンを保持します。
-- 入力キューが満杯になると、TCP Socket、Syslog、StatsD は該当する接続を閉じ、デコード後に永続キューへの登録を拒否したレコードを数えます。稼働ビューで拒否理由を確認でき、API は source_rejected_records、Prometheus は collectway_flow_source_rejected_records_total を公開します。受信済みのバッチはキューに保持します。
+- 取り込み診断では、受信拒否とデコード時の破棄を区別します。Kafka、オブジェクト通知、ページ分割された監査ソース、Kubernetes の一覧取得は、再開時に読み取り位置を保存または検証します。
+- 有効な部分応答を保存し、未確認のレコードを再試行します。プロトコル応答がない送信は sent_without_receipt として集計します。
+- 対応する宛先では Retry-After とローカルのバックオフを永続化します。キュー先頭の診断には実際の再試行時刻が表示されます。
 
 ## ソースから配信まで、ひとつの経路
 
@@ -46,7 +47,7 @@
 
 ### 更新する前に
 
-0.5.8 は制御プロトコル v9、チェックポイント形式 3 を使用します。全ノードのデータディレクトリ、master.key、Lookup リソース、環境設定を完全にバックアップしてから、管理サーバーと全 Worker をまとめて更新してください。
+0.5.9 は制御プロトコル v9、チェックポイント形式 3 を使用します。取り込みを停止し、各ノードのデータ、master.key、Lookup リソースと環境設定をバックアップしてから、管理サーバーと全 Worker をまとめて更新してください。ロールバック時は更新前のバックアップを復元してください。
 
 ## 質問とフィードバック
 

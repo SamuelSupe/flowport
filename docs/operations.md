@@ -1,6 +1,6 @@
 # 运维与升级
 
-[FlowPorts 0.5.8](../README.zh-CN.md) · [运维文档](https://flowport.pages.dev/docs/delivery/) · [集群指南](https://flowport.pages.dev/docs/cluster/)
+[FlowPorts 0.5.9](../README.zh-CN.md) · [运维文档](https://flowport.pages.dev/docs/delivery/) · [集群指南](https://flowport.pages.dev/docs/cluster/)
 
 ## 日常检查
 
@@ -10,9 +10,9 @@
 - TCP 输入队列满时，查看运行视图的最近错误和 `collectway_flow_source_rejected_records_total`。确认输入区及卡住的目标输出区占用。
 - 故障持续期间，扩大队列不能保证不丢数据；还需结合上游背压、暂停接入和目标恢复安排。
 
-## 升级到 0.5.8
+## 升级到 0.5.9
 
-0.5.8 使用控制协议 v9、检查点格式 3。先备份各节点的完整数据目录、master.key、Lookup 资源与环境配置，再协调更新管理端和全部 Worker。 另见[交付策略](delivery.md)和[完整版本说明](https://flowport.pages.dev/changelog/#v0-5-8)。
+0.5.9 使用控制协议 v9、检查点格式 3。升级前停止接入并备份各节点的数据、master.key、Lookup 和环境配置，再协调升级管理端与全部 Worker。回退时恢复升级前的备份。 另见[交付策略](delivery.md)和[完整版本说明](https://flowport.pages.dev/changelog/#v0-5-9)。
 
 1. 核对版本、积压、失败次数与各区域容量，安排必要的接入间断。
 2. 停止相应服务，备份每个节点**整个数据目录**、master.key、Lookup 资源及实际使用的环境配置，包括 `/etc/flowport/flowport.env`。
@@ -22,7 +22,7 @@
 ```sh
 sudo systemctl stop flowport
 # 按官方指南完成完整备份后，再安装新包
-sudo apt install ./flowport_0.5.8_linux_amd64.deb
+sudo apt install ./flowport_0.5.9_linux_amd64.deb
 collectway -version
 sudo journalctl -u flowport -n 50
 ```

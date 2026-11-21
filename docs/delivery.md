@@ -1,6 +1,6 @@
 # 交付、容量与恢复
 
-[FlowPorts 0.5.8](../README.zh-CN.md) · [完整交付指南](https://flowport.pages.dev/docs/delivery/) · [English](https://flowport.pages.dev/en/docs/delivery/)
+[FlowPorts 0.5.9](../README.zh-CN.md) · [完整交付指南](https://flowport.pages.dev/docs/delivery/) · [English](https://flowport.pages.dev/en/docs/delivery/)
 
 ## 从接收到送达
 
@@ -26,6 +26,12 @@ Socket 来源设置相同时，原有 TCP 和 UDP 监听器继续运行。Worker
 输入队列满时，TCP Socket、Syslog 和 StatsD 关闭受影响的连接，并统计已解码但未持久入队的记录。运行视图显示拒收原因，API 提供 source_rejected_records，Prometheus 提供 collectway_flow_source_rejected_records_total。已入队积压继续保留。
 
 普通 TCP Socket 缺少逐批持久入队确认。容量恢复后客户端可重连。断开时服务端尚未读到的字节无法计数。
+
+## 部分回执与退避
+
+投递保留有效的部分回执，只重试未确认记录。缺少协议回执的写出计入 sent_without_receipt。
+
+支持的目标将 Retry-After 与本地退避一并持久化。队头诊断显示实际重试时间。
 
 ## 重启与恢复
 

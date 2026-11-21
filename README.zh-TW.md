@@ -6,12 +6,13 @@
 
 將日誌、指標、追蹤與事件接入 **Source → Pipeline → Destinations**，在來源與觀測、分析系統之間完成處理和轉送。
 
-**[官網](https://flowport.pages.dev/zh-TW/) · [快速開始](https://flowport.pages.dev/zh-TW/docs/) · [Linux 下載](https://flowport.pages.dev/zh-TW/downloads/) · [版本說明](https://flowport.pages.dev/zh-TW/changelog/#v0-5-8)**
+**[官網](https://flowport.pages.dev/zh-TW/) · [快速開始](https://flowport.pages.dev/zh-TW/docs/) · [Linux 下載](https://flowport.pages.dev/zh-TW/downloads/) · [版本說明](https://flowport.pages.dev/zh-TW/changelog/#v0-5-9)**
 
-## 0.5.8 更新
+## 0.5.9 更新
 
-- Socket 來源設定相同時，原有 TCP 和 UDP 監聽器繼續執行。Worker 安裝新版後，透過既有 TCP 連線新入佇列的資料也使用新 Pipeline。積壓批次沿用入佇列時的版本。
-- 輸入佇列滿時，TCP Socket、Syslog 和 StatsD 關閉受影響的連線，並統計已解碼但未持久入佇列的資料。執行視圖顯示拒收原因，API 提供 source_rejected_records，Prometheus 提供 collectway_flow_source_rejected_records_total。已入佇列的積壓繼續保留。
+- 接入診斷區分拒收與解碼丟棄。Kafka、物件通知、分頁稽核來源和 Kubernetes 清單在續讀時儲存或驗證進度。
+- 投遞保留有效的部分回執，只重試未確認的資料。缺少協定回執的寫出計入 sent_without_receipt。
+- 支援的目的端會將 Retry-After 與本機退避一併持久化。佇列頭部診斷顯示實際重試時間。
 
 ## 從來源到送達，一條完整路徑
 
@@ -46,7 +47,7 @@
 
 ### 升級前
 
-0.5.8 使用控制協定 v9、檢查點格式 3。先備份各節點的完整資料目錄、master.key、Lookup 資源與環境設定，再協調更新管理端和全部 Worker。
+0.5.9 使用控制協定 v9、檢查點格式 3。升級前停止接入，備份各節點的資料、master.key、Lookup 和環境設定，再協調升級管理端與所有 Worker。回復舊版時還原升級前的備份。
 
 ## 問題與回饋
 

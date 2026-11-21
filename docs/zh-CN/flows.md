@@ -1,6 +1,6 @@
 # 数据流配置与发布
 
-[FlowPorts 0.5.8](../../README.zh-CN.md) · [Docs](../index.md) · [Website](https://flowport.pages.dev/docs/)
+[FlowPorts 0.5.9](../../README.zh-CN.md) · [Docs](../index.md) · [Website](https://flowport.pages.dev/docs/)
 
 > 目的端首次发送后默认快速重试 5 次。快速重试耗尽后保留未确认数据，通道至少等待 60 秒，再试投一批。 新数据流默认每 Worker 256 MiB 和 500 个内部批次，分配给输入和各目的端。输出区满时保留原输入，输入区满时拒收新数据。
 

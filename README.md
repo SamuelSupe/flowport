@@ -6,12 +6,13 @@
 
 Collect, process and route logs, metrics, traces and events through **Source → Pipeline → Destinations**.
 
-**[Website](https://flowport.pages.dev/en/) · [Get started](https://flowport.pages.dev/en/docs/) · [Linux downloads](https://flowport.pages.dev/en/downloads/) · [Release notes](https://flowport.pages.dev/en/changelog/#v0-5-8)**
+**[Website](https://flowport.pages.dev/en/) · [Get started](https://flowport.pages.dev/en/docs/) · [Linux downloads](https://flowport.pages.dev/en/downloads/) · [Release notes](https://flowport.pages.dev/en/changelog/#v0-5-9)**
 
-## New in 0.5.8
+## New in 0.5.9
 
-- Existing TCP and UDP Socket listeners stay active when their Source settings are unchanged. After the Worker installs a Pipeline update, newly admitted records use the new version, even on an existing TCP connection. Queued batches keep their original version.
-- When the input queue is full, TCP Socket, Syslog and StatsD close the affected connection and count decoded records refused before durable admission. See the rejection reason in the runtime view, source_rejected_records in the API and collectway_flow_source_rejected_records_total in Prometheus. Accepted backlog stays queued.
+- Intake diagnostics distinguish rejected records from decode drops. Kafka, object notifications, paginated audit sources and Kubernetes listing preserve or validate progress when resuming.
+- Delivery keeps valid partial receipts and retries unconfirmed records. Writes without a protocol receipt are counted as sent_without_receipt.
+- Supported destinations persist Retry-After alongside local backoff. Queue-head diagnostics show the effective retry time.
 
 ## One path, from source to delivery
 
@@ -46,7 +47,7 @@ Collect, process and route logs, metrics, traces and events through **Source →
 
 ### Before upgrading
 
-0.5.8 uses control protocol v9 and checkpoint format 3. Back up the complete data directories, master.key, Lookup resources and environment configuration on every node, then upgrade the manager and all Workers together.
+0.5.9 uses control protocol v9 and checkpoint format 3. Stop intake and back up each node’s data, master.key, Lookup resources and environment configuration before upgrading the manager and all Workers together. To roll back, restore the pre-upgrade backup.
 
 ## Questions and feedback
 
