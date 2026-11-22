@@ -6,13 +6,13 @@
 
 將日誌、指標、追蹤與事件接入 **Source → Pipeline → Destinations**，在來源與觀測、分析系統之間完成處理和轉送。
 
-**[官網](https://flowport.pages.dev/zh-TW/) · [快速開始](https://flowport.pages.dev/zh-TW/docs/) · [Linux 下載](https://flowport.pages.dev/zh-TW/downloads/) · [版本說明](https://flowport.pages.dev/zh-TW/changelog/#v0-5-9)**
+**[官網](https://flowport.pages.dev/zh-TW/) · [快速開始](https://flowport.pages.dev/zh-TW/docs/) · [Linux 下載](https://flowport.pages.dev/zh-TW/downloads/) · [版本說明](https://flowport.pages.dev/zh-TW/changelog/#v0-5-10)**
 
-## 0.5.9 更新
+## 0.5.10 更新
 
-- 接入診斷區分拒收與解碼丟棄。Kafka、物件通知、分頁稽核來源和 Kubernetes 清單在續讀時儲存或驗證進度。
-- 投遞保留有效的部分回執，只重試未確認的資料。缺少協定回執的寫出計入 sent_without_receipt。
-- 支援的目的端會將 Retry-After 與本機退避一併持久化。佇列頭部診斷顯示實際重試時間。
+- Pipeline 在獨立程序執行。逾時可以終止卡住的內建函式，已入列輸入和收據保留重試。
+- Manager 在持久化後發布租約和授權變更，寫入期間仍可進行身分核驗和已提交狀態查詢。
+- 遲到心跳無法續期已到期租約。排空確認等待採集器退出，正常交接使用最後上報的已投遞游標。
 
 ## 從來源到送達，一條完整路徑
 
@@ -47,7 +47,7 @@
 
 ### 升級前
 
-0.5.9 使用控制協定 v9、檢查點格式 3。升級前停止接入，備份各節點的資料、master.key、Lookup 和環境設定，再協調升級管理端與所有 Worker。回復舊版時還原升級前的備份。
+0.5.10 使用控制協定 v9、檢查點格式 3。升級前停止接入，備份各節點的資料、master.key、Lookup 和環境設定，再協調升級管理端與所有 Worker。回復舊版時還原升級前的備份。
 
 ## 問題與回饋
 

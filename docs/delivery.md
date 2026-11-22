@@ -1,6 +1,6 @@
 # 交付、容量与恢复
 
-[FlowPorts 0.5.9](../README.zh-CN.md) · [完整交付指南](https://flowport.pages.dev/docs/delivery/) · [English](https://flowport.pages.dev/en/docs/delivery/)
+[FlowPorts 0.5.10](../README.zh-CN.md) · [完整交付指南](https://flowport.pages.dev/docs/delivery/) · [English](https://flowport.pages.dev/en/docs/delivery/)
 
 ## 从接收到送达
 
@@ -36,3 +36,7 @@ Socket 来源设置相同时，原有 TCP 和 UDP 监听器继续运行。Worker
 ## 重启与恢复
 
 Worker 从本地日志恢复队列和持久窗口。批次入队时固定的 Pipeline 与 Lookup 版本继续用于处理，已生成的输出重试时使用原处理结果。升级前备份整个节点数据目录、密钥、Lookup 资源与环境配置。线上历史错误和计数可在运行视图与管理 API 检查。
+
+### Pipeline 超时恢复
+
+Pipeline 在独立进程运行。超时可以终止卡住的内置函数，已入队输入和收据保留重试。

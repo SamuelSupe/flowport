@@ -4,7 +4,7 @@
 
 FlowPort uses GuanceCloud Platypus's Go executor, not Vector VRL. Source, canvas and shortcuts views edit the same per-category script; .ppl import/export is supported. Failed editor resources can be retried without discarding the draft. The work area stays at least 600px high; total editor height is at least 720px and grows to 80% of tall viewports. Panels scroll independently.
 
-The per-record wall-clock limit remains 100 ms. An accepted input batch gets at most three attempts: the first two budget failures retain it, roll back candidate state and wait 1 and 2 seconds; a third failure releases that batch as pipeline_error and records the processing failure and discarded bytes. The count survives restart. Retries keep the queued version and FIFO rules. Exhausted Worker shared bytes or scope slots retain input for retry; the 8 MiB per-scope limit, parsing, type and output errors still release input.
+Workers and sample preview run Pipeline in separate processes. The record deadline is 100 ms and the batch deadline is 30 seconds. If a built-in stalls, the supervisor terminates and reaps its process. The queued input, receipt and version are retained for durable backoff from 1 to 60 seconds. Candidate output and state are discarded. Parsing, type and per-scope limit errors can release the affected input.
 
 ## Editing and sample preview
 
@@ -43,7 +43,7 @@ Current failure handling and migration: [FlowPort](https://flowport.pages.dev/en
 
 ## Versions and failure release
 
-Intake acknowledgment means durable local enqueue only. Each destination defaults to 5 retries after the first attempt (configurable 0–100). Exhaustion irreversibly discards unacknowledged data; there is no dead-letter payload or manual replay. Full input rejects new data; full output evicts by FIFO only within that channel. Shrinking preserves old backlog while draining. Processing failures may also release input. Publishing does not prove Worker installation or downstream receipt. Check the actual downstream content.
+Intake acknowledgment confirms durable acceptance on the local Worker. Each destination defaults to five fast retries after the first attempt. Unconfirmed data stays queued after those retries, and the channel waits at least 60 seconds before probing one batch. A full output retains the input and a full input refuses new records. Confirm downstream delivery separately.
 
 Retry preserves the processed body, destination ID and delivery identity. Republish the same destination ID to use its newly published connection settings on the next attempt, without rerunning Pipeline or new routing. If the new publication removes that target, its queued branch retains its original connection. Counters remain attributed to the original input version. Editing a draft or saving a Destination alone does not update backlog.
 

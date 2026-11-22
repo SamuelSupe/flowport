@@ -6,13 +6,13 @@
 
 로그, 메트릭, 트레이스와 이벤트를 **Source → Pipeline → Destinations**로 처리하여 관측 및 분석 시스템에 전달합니다.
 
-**[공식 사이트](https://flowport.pages.dev/ko/) · [시작하기](https://flowport.pages.dev/ko/docs/) · [Linux 다운로드](https://flowport.pages.dev/ko/downloads/) · [릴리스 노트](https://flowport.pages.dev/ko/changelog/#v0-5-9)**
+**[공식 사이트](https://flowport.pages.dev/ko/) · [시작하기](https://flowport.pages.dev/ko/docs/) · [Linux 다운로드](https://flowport.pages.dev/ko/downloads/) · [릴리스 노트](https://flowport.pages.dev/ko/changelog/#v0-5-10)**
 
-## 0.5.9 업데이트
+## 0.5.10 업데이트
 
-- 수집 진단에서 수집 거부와 디코딩 중 폐기를 구분합니다. Kafka, 객체 알림, 페이지 단위 감사 소스 및 Kubernetes 목록은 재개할 때 읽기 진행 상태를 저장하거나 검증합니다.
-- 유효한 부분 응답을 보존하고 미확인 레코드를 재시도합니다. 프로토콜 응답 없이 전송된 레코드는 sent_without_receipt로 집계합니다.
-- 지원되는 대상은 Retry-After와 로컬 백오프를 함께 영속화합니다. 큐 선두 진단에 실제 재시도 시각이 표시됩니다.
+- Pipeline은 별도 프로세스에서 실행됩니다. 시간이 초과되면 멈춘 내장 함수를 종료하고 이미 수신한 입력과 수신 확인은 재시도를 위해 보존합니다.
+- Manager는 임대와 권한 변경을 저장한 뒤 공개합니다. 쓰기 중에도 인증과 마지막 저장 상태 조회가 가능합니다.
+- 늦은 하트비트는 만료된 임대를 갱신할 수 없습니다. 수집기가 종료된 후 드레인을 확인하며 정상 인계는 마지막으로 보고된 전송 커서를 사용합니다.
 
 ## 소스에서 전달까지 하나의 경로
 
@@ -47,7 +47,7 @@
 
 ### 업그레이드 전
 
-0.5.9는 제어 프로토콜 v9와 체크포인트 형식 3을 사용합니다. 수집을 중지하고 각 노드의 데이터, master.key, Lookup 리소스와 환경 설정을 백업한 뒤 관리자와 모든 Worker를 함께 업데이트하세요. 롤백하려면 업데이트 전 백업을 복원하세요.
+0.5.10는 제어 프로토콜 v9와 체크포인트 형식 3을 사용합니다. 수집을 중지하고 각 노드의 데이터, master.key, Lookup 리소스와 환경 설정을 백업한 뒤 관리자와 모든 Worker를 함께 업데이트하세요. 롤백하려면 업데이트 전 백업을 복원하세요.
 
 ## 질문과 피드백
 

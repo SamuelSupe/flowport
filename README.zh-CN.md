@@ -6,13 +6,13 @@
 
 把日志、指标、链路与事件接入 **Source → Pipeline → Destinations**，在来源与观测、分析系统之间完成处理和转发。
 
-**[官网](https://flowport.pages.dev/) · [快速开始](https://flowport.pages.dev/docs/) · [Linux 下载](https://flowport.pages.dev/downloads/) · [版本说明](https://flowport.pages.dev/changelog/#v0-5-9)**
+**[官网](https://flowport.pages.dev/) · [快速开始](https://flowport.pages.dev/docs/) · [Linux 下载](https://flowport.pages.dev/downloads/) · [版本说明](https://flowport.pages.dev/changelog/#v0-5-10)**
 
-## 0.5.9 更新
+## 0.5.10 更新
 
-- 接入诊断区分拒收与解码丢弃。Kafka、对象通知、分页审计来源和 Kubernetes 列表在续读时保存或校验进度。
-- 投递保留有效的部分回执，只重试未确认记录。缺少协议回执的写出计入 sent_without_receipt。
-- 支持的目标将 Retry-After 与本地退避一并持久化。队头诊断显示实际重试时间。
+- Pipeline 在独立进程运行。超时可以终止卡住的内置函数，已入队输入和收据保留重试。
+- Manager 在落盘后发布租约和授权变更，写入期间仍可进行身份核验和已提交状态查询。
+- 迟到心跳不能续期已过期租约。排空确认等待采集器退出，正常交接使用最后上报的已投递游标。
 
 ## 从来源到送达，一条完整路径
 
@@ -47,7 +47,7 @@
 
 ### 升级前
 
-0.5.9 使用控制协议 v9、检查点格式 3。升级前停止接入并备份各节点的数据、master.key、Lookup 和环境配置，再协调升级管理端与全部 Worker。回退时恢复升级前的备份。
+0.5.10 使用控制协议 v9、检查点格式 3。升级前停止接入并备份各节点的数据、master.key、Lookup 和环境配置，再协调升级管理端与全部 Worker。回退时恢复升级前的备份。
 
 ## 问题与反馈
 
