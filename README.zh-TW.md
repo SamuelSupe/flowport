@@ -6,13 +6,14 @@
 
 將日誌、指標、追蹤與事件接入 **Source → Pipeline → Destinations**，在來源與觀測、分析系統之間完成處理和轉送。
 
-**[官網](https://flowport.pages.dev/zh-TW/) · [快速開始](https://flowport.pages.dev/zh-TW/docs/) · [Linux 下載](https://flowport.pages.dev/zh-TW/downloads/) · [版本說明](https://flowport.pages.dev/zh-TW/changelog/#v0-5-10)**
+**[官網](https://flowport.pages.dev/zh-TW/) · [快速開始](https://flowport.pages.dev/zh-TW/docs/) · [Linux 下載](https://flowport.pages.dev/zh-TW/downloads/) · [版本說明](https://flowport.pages.dev/zh-TW/changelog/#v0-5-11)**
 
-## 0.5.10 更新
+## 0.5.11 更新
 
-- Pipeline 在獨立程序執行。逾時可以終止卡住的內建函式，已入列輸入和收據保留重試。
-- Manager 在持久化後發布租約和授權變更，寫入期間仍可進行身分核驗和已提交狀態查詢。
-- 遲到心跳無法續期已到期租約。排空確認等待採集器退出，正常交接使用最後上報的已投遞游標。
+- Beats 將壓縮視窗分組寫入，只對已持久化的前綴傳送一次累計確認。Beats 和 Fluent 在等待寫入或傳送確認時釋放共用解碼名額。
+- Datadog Logs 在回傳收據前驗證 JSON 和批次上限。格式錯誤回傳 HTTP 400，超限回傳 HTTP 413，佇列已滿則回傳可重試的 HTTP 503。
+- CDC 快照、SLS、搜尋和 Kinesis 採用有界分批，並在恢復時使用已持久化的進度。CloudWatch Logs 以壓縮區塊保存去重游標。
+- NATS Core 斷線時保留已取出的緩衝訊息，MQTT、Pulsar 和 Pub/Sub 在確認前重新檢查 Worker 的接入資格。叢集交接使用原歸屬最後回報的已持久化游標。
 
 ## 從來源到送達，一條完整路徑
 
@@ -47,7 +48,7 @@
 
 ### 升級前
 
-0.5.10 使用控制協定 v9、檢查點格式 3。升級前停止接入，備份各節點的資料、master.key、Lookup 和環境設定，再協調升級管理端與所有 Worker。回復舊版時還原升級前的備份。
+0.5.11 使用控制協定 v9、檢查點格式 3。升級前停止接入，備份各節點的資料、master.key、Lookup 和環境設定，再協調升級管理端與所有 Worker。回復舊版時還原升級前的備份。
 
 ## 問題與回饋
 

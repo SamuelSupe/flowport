@@ -6,13 +6,14 @@
 
 Collect, process and route logs, metrics, traces and events through **Source → Pipeline → Destinations**.
 
-**[Website](https://flowport.pages.dev/en/) · [Get started](https://flowport.pages.dev/en/docs/) · [Linux downloads](https://flowport.pages.dev/en/downloads/) · [Release notes](https://flowport.pages.dev/en/changelog/#v0-5-10)**
+**[Website](https://flowport.pages.dev/en/) · [Get started](https://flowport.pages.dev/en/docs/) · [Linux downloads](https://flowport.pages.dev/en/downloads/) · [Release notes](https://flowport.pages.dev/en/changelog/#v0-5-11)**
 
-## New in 0.5.10
+## New in 0.5.11
 
-- Pipeline runs in separate execution processes. A deadline can terminate a stuck built-in while queued input and receipts stay available for retry.
-- The Manager commits lease and approval changes before publishing them. Authentication and committed control state remain available during writes.
-- Late heartbeats cannot renew expired leases. Drain confirmation waits for collectors to exit, and a graceful handoff uses the last reported delivered cursor.
+- Beats commits compressed windows in groups and sends one cumulative acknowledgment for the durable prefix. Beats and Fluent release shared decoding slots before waiting on disk or writing acknowledgments.
+- Datadog Logs validates JSON and batch limits before issuing a receipt. Invalid input returns HTTP 400, oversized input returns HTTP 413, and a full queue returns HTTP 503 for retry.
+- CDC snapshots, SLS, search and Kinesis use bounded batches and preserve durable progress when resuming. CloudWatch Logs stores deduplication cursors as compressed blocks.
+- NATS Core saves buffered records it has already read when the connection closes. MQTT, Pulsar and Pub/Sub recheck Worker admission before acknowledging. Cluster handoff uses the latest durable cursor reported by the prior owner.
 
 ## One path, from source to delivery
 
@@ -47,7 +48,7 @@ Collect, process and route logs, metrics, traces and events through **Source →
 
 ### Before upgrading
 
-0.5.10 uses control protocol v9 and checkpoint format 3. Stop intake and back up each node’s data, master.key, Lookup resources and environment configuration before upgrading the manager and all Workers together. To roll back, restore the pre-upgrade backup.
+0.5.11 uses control protocol v9 and checkpoint format 3. Stop intake and back up each node’s data, master.key, Lookup resources and environment configuration before upgrading the manager and all Workers together. To roll back, restore the pre-upgrade backup.
 
 ## Questions and feedback
 

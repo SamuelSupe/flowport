@@ -6,13 +6,14 @@
 
 把日志、指标、链路与事件接入 **Source → Pipeline → Destinations**，在来源与观测、分析系统之间完成处理和转发。
 
-**[官网](https://flowport.pages.dev/) · [快速开始](https://flowport.pages.dev/docs/) · [Linux 下载](https://flowport.pages.dev/downloads/) · [版本说明](https://flowport.pages.dev/changelog/#v0-5-10)**
+**[官网](https://flowport.pages.dev/) · [快速开始](https://flowport.pages.dev/docs/) · [Linux 下载](https://flowport.pages.dev/downloads/) · [版本说明](https://flowport.pages.dev/changelog/#v0-5-11)**
 
-## 0.5.10 更新
+## 0.5.11 更新
 
-- Pipeline 在独立进程运行。超时可以终止卡住的内置函数，已入队输入和收据保留重试。
-- Manager 在落盘后发布租约和授权变更，写入期间仍可进行身份核验和已提交状态查询。
-- 迟到心跳不能续期已过期租约。排空确认等待采集器退出，正常交接使用最后上报的已投递游标。
+- Beats 将压缩窗口分组落盘，只对已持久化的前缀发送一次累计确认。Beats 和 Fluent 在等待落盘或写确认时释放共享解码名额。
+- Datadog Logs 在返回收据前校验 JSON 和批次上限。格式错误返回 HTTP 400，超限返回 HTTP 413，队列满返回可重试的 HTTP 503。
+- CDC 快照、SLS、搜索和 Kinesis 采用有界分批，并在恢复时使用已持久化的进度。CloudWatch Logs 以压缩块保存去重游标。
+- NATS Core 断连时保留已取出的缓冲消息，MQTT、Pulsar 和 Pub/Sub 在确认前复检 Worker 接入资格。集群交接使用原归属最后上报的已持久化游标。
 
 ## 从来源到送达，一条完整路径
 
@@ -47,7 +48,7 @@
 
 ### 升级前
 
-0.5.10 使用控制协议 v9、检查点格式 3。升级前停止接入并备份各节点的数据、master.key、Lookup 和环境配置，再协调升级管理端与全部 Worker。回退时恢复升级前的备份。
+0.5.11 使用控制协议 v9、检查点格式 3。升级前停止接入并备份各节点的数据、master.key、Lookup 和环境配置，再协调升级管理端与全部 Worker。回退时恢复升级前的备份。
 
 ## 问题与反馈
 

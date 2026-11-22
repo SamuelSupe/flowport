@@ -1,6 +1,6 @@
 # 交付、容量与恢复
 
-[FlowPorts 0.5.10](../README.zh-CN.md) · [完整交付指南](https://flowport.pages.dev/docs/delivery/) · [English](https://flowport.pages.dev/en/docs/delivery/)
+[FlowPorts 0.5.11](../README.zh-CN.md) · [完整交付指南](https://flowport.pages.dev/docs/delivery/) · [English](https://flowport.pages.dev/en/docs/delivery/)
 
 ## 从接收到送达
 
@@ -40,3 +40,10 @@ Worker 从本地日志恢复队列和持久窗口。批次入队时固定的 Pip
 ### Pipeline 超时恢复
 
 Pipeline 在独立进程运行。超时可以终止卡住的内置函数，已入队输入和收据保留重试。
+
+### 0.5.11 接入确认与恢复
+
+- Beats 将压缩窗口分组落盘，只对已持久化的前缀发送一次累计确认。Beats 和 Fluent 在等待落盘或写确认时释放共享解码名额。
+- Datadog Logs 在返回收据前校验 JSON 和批次上限。格式错误返回 HTTP 400，超限返回 HTTP 413，队列满返回可重试的 HTTP 503。
+- CDC 快照、SLS、搜索和 Kinesis 采用有界分批，并在恢复时使用已持久化的进度。CloudWatch Logs 以压缩块保存去重游标。
+- NATS Core 断连时保留已取出的缓冲消息，MQTT、Pulsar 和 Pub/Sub 在确认前复检 Worker 接入资格。集群交接使用原归属最后上报的已持久化游标。

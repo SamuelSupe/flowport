@@ -1,6 +1,6 @@
 # 运维与升级
 
-[FlowPorts 0.5.10](../README.zh-CN.md) · [运维文档](https://flowport.pages.dev/docs/delivery/) · [集群指南](https://flowport.pages.dev/docs/cluster/)
+[FlowPorts 0.5.11](../README.zh-CN.md) · [运维文档](https://flowport.pages.dev/docs/delivery/) · [集群指南](https://flowport.pages.dev/docs/cluster/)
 
 ## 日常检查
 
@@ -14,9 +14,9 @@
 
 Manager 在落盘后发布租约和授权变更，写入期间仍可进行身份核验和已提交状态查询。迟到心跳不能续期已过期租约。排空确认等待采集器退出，正常交接使用最后上报的已投递游标。
 
-## 升级到 0.5.10
+## 升级到 0.5.11
 
-0.5.10 使用控制协议 v9、检查点格式 3。升级前停止接入并备份各节点的数据、master.key、Lookup 和环境配置，再协调升级管理端与全部 Worker。回退时恢复升级前的备份。 另见[交付策略](delivery.md)和[完整版本说明](https://flowport.pages.dev/changelog/#v0-5-10)。
+0.5.11 使用控制协议 v9、检查点格式 3。升级前停止接入并备份各节点的数据、master.key、Lookup 和环境配置，再协调升级管理端与全部 Worker。回退时恢复升级前的备份。 另见[交付策略](delivery.md)和[完整版本说明](https://flowport.pages.dev/changelog/#v0-5-11)。
 
 1. 核对版本、积压、失败次数与各区域容量，安排必要的接入间断。
 2. 停止相应服务，备份每个节点**整个数据目录**、master.key、Lookup 资源及实际使用的环境配置，包括 `/etc/flowport/flowport.env`。
@@ -26,7 +26,7 @@ Manager 在落盘后发布租约和授权变更，写入期间仍可进行身份
 ```sh
 sudo systemctl stop flowport
 # 按官方指南完成完整备份后，再安装新包
-sudo apt install ./flowport_0.5.10_linux_amd64.deb
+sudo apt install ./flowport_0.5.11_linux_amd64.deb
 collectway -version
 sudo journalctl -u flowport -n 50
 ```

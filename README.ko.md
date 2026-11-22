@@ -6,13 +6,14 @@
 
 로그, 메트릭, 트레이스와 이벤트를 **Source → Pipeline → Destinations**로 처리하여 관측 및 분석 시스템에 전달합니다.
 
-**[공식 사이트](https://flowport.pages.dev/ko/) · [시작하기](https://flowport.pages.dev/ko/docs/) · [Linux 다운로드](https://flowport.pages.dev/ko/downloads/) · [릴리스 노트](https://flowport.pages.dev/ko/changelog/#v0-5-10)**
+**[공식 사이트](https://flowport.pages.dev/ko/) · [시작하기](https://flowport.pages.dev/ko/docs/) · [Linux 다운로드](https://flowport.pages.dev/ko/downloads/) · [릴리스 노트](https://flowport.pages.dev/ko/changelog/#v0-5-11)**
 
-## 0.5.10 업데이트
+## 0.5.11 업데이트
 
-- Pipeline은 별도 프로세스에서 실행됩니다. 시간이 초과되면 멈춘 내장 함수를 종료하고 이미 수신한 입력과 수신 확인은 재시도를 위해 보존합니다.
-- Manager는 임대와 권한 변경을 저장한 뒤 공개합니다. 쓰기 중에도 인증과 마지막 저장 상태 조회가 가능합니다.
-- 늦은 하트비트는 만료된 임대를 갱신할 수 없습니다. 수집기가 종료된 후 드레인을 확인하며 정상 인계는 마지막으로 보고된 전송 커서를 사용합니다.
+- Beats는 압축 윈도우를 그룹 단위로 저장하고 저장이 완료된 앞부분에 대해 누적 ACK를 한 번 보냅니다. Beats와 Fluent는 저장 대기 또는 ACK 쓰기 전에 공유 디코딩 슬롯을 반환합니다.
+- Datadog Logs는 수신 확인을 반환하기 전에 JSON과 배치 한도를 검증합니다. 형식 오류는 HTTP 400, 한도 초과는 HTTP 413, 큐 포화는 재시도 가능한 HTTP 503으로 응답합니다.
+- CDC 스냅샷, SLS, 검색, Kinesis는 크기가 제한된 배치를 사용하고 저장된 지점부터 재개합니다. CloudWatch Logs는 중복 제거 커서를 압축 블록에 저장합니다.
+- NATS Core는 연결이 끊어져도 이미 읽은 버퍼 메시지를 저장합니다. MQTT, Pulsar, Pub/Sub는 ACK 전에 Worker의 수집 자격을 다시 확인합니다. 클러스터 인계에는 이전 담당 Worker가 마지막으로 보고한 영속 커서를 사용합니다.
 
 ## 소스에서 전달까지 하나의 경로
 
@@ -47,7 +48,7 @@
 
 ### 업그레이드 전
 
-0.5.10는 제어 프로토콜 v9와 체크포인트 형식 3을 사용합니다. 수집을 중지하고 각 노드의 데이터, master.key, Lookup 리소스와 환경 설정을 백업한 뒤 관리자와 모든 Worker를 함께 업데이트하세요. 롤백하려면 업데이트 전 백업을 복원하세요.
+0.5.11는 제어 프로토콜 v9와 체크포인트 형식 3을 사용합니다. 수집을 중지하고 각 노드의 데이터, master.key, Lookup 리소스와 환경 설정을 백업한 뒤 관리자와 모든 Worker를 함께 업데이트하세요. 롤백하려면 업데이트 전 백업을 복원하세요.
 
 ## 질문과 피드백
 
