@@ -6,14 +6,14 @@
 
 ログ、メトリクス、トレース、イベントを **Source → Pipeline → Destinations** で処理し、観測・分析システムへ転送します。
 
-**[公式サイト](https://flowport.pages.dev/ja/) · [はじめに](https://flowport.pages.dev/ja/docs/) · [Linux ダウンロード](https://flowport.pages.dev/ja/downloads/) · [リリースノート](https://flowport.pages.dev/ja/changelog/#v0-5-11)**
+**[公式サイト](https://flowport.pages.dev/ja/) · [はじめに](https://flowport.pages.dev/ja/docs/) · [Linux ダウンロード](https://flowport.pages.dev/ja/downloads/) · [リリースノート](https://flowport.pages.dev/ja/changelog/#v0-5-12)**
 
-## 0.5.11 の更新
+## 0.5.12 の更新
 
-- Beats は圧縮ウィンドウをグループ単位で永続化し、永続化済みの先頭部分に対して累積 ACK を 1 回返します。Beats と Fluent は永続化待ちや ACK の書き込み前に共有デコード枠を解放します。
-- Datadog Logs は受領を返す前に JSON とバッチ上限を検証します。形式エラーは HTTP 400、上限超過は HTTP 413、キュー満杯は再試行可能な HTTP 503 になります。
-- CDC スナップショット、SLS、検索、Kinesis はサイズを制限したバッチを使用し、再開時に永続化済みの進捗を使用します。CloudWatch Logs は重複排除カーソルを圧縮ブロックで保持します。
-- NATS Core は切断時に読み取り済みのバッファ内メッセージを保持します。MQTT、Pulsar、Pub/Sub は ACK の前に Worker の受け入れ資格を再確認します。クラスタの引き継ぎでは前の担当 Worker が最後に報告した永続カーソルを使います。
+- 大量のフィールドを含む MongoDB の serverStatus を同じサンプリング時刻の複数ポイントに分け、1 バッチで取り込みます。ネストした BSON はドライバーの既定のデコーダーを使用します。
+- PostgreSQL は代替ホストにも TLS を使用し、直接 TLS モードでは ALPN を維持します。MongoDB は明示的に上書きされていない URI の信頼ルートとクライアント証明書を維持します。
+- Azure Blob と Service Bus は個別のエンドポイントを検証します。Pulsar は新規接続時にプライベート CA を再読み込みし、TLS サーバー名が指定されている場合はクライアント証明書と秘密鍵も再読み込みします。
+- Manager の Lookup ダウンロードは同時に 2 件、合計 128 MiB までです。メモリ逼迫時には未使用のキャッシュを解放します。容量が一時的に不足すると、管理転送と Worker のダウンロードは HTTP 503 と Retry-After を返します。
 
 ## ソースから配信まで、ひとつの経路
 
@@ -48,7 +48,7 @@
 
 ### 更新する前に
 
-0.5.11 は制御プロトコル v9、チェックポイント形式 3 を使用します。取り込みを停止し、各ノードのデータ、master.key、Lookup リソースと環境設定をバックアップしてから、管理サーバーと全 Worker をまとめて更新してください。ロールバック時は更新前のバックアップを復元してください。
+0.5.12 は制御プロトコル v9、チェックポイント形式 3 を使用します。取り込みを停止し、各ノードのデータ、master.key、Lookup リソースと環境設定をバックアップしてから、管理サーバーと全 Worker をまとめて更新してください。ロールバック時は更新前のバックアップを復元してください。
 
 ## 質問とフィードバック
 

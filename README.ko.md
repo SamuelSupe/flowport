@@ -6,14 +6,14 @@
 
 로그, 메트릭, 트레이스와 이벤트를 **Source → Pipeline → Destinations**로 처리하여 관측 및 분석 시스템에 전달합니다.
 
-**[공식 사이트](https://flowport.pages.dev/ko/) · [시작하기](https://flowport.pages.dev/ko/docs/) · [Linux 다운로드](https://flowport.pages.dev/ko/downloads/) · [릴리스 노트](https://flowport.pages.dev/ko/changelog/#v0-5-11)**
+**[공식 사이트](https://flowport.pages.dev/ko/) · [시작하기](https://flowport.pages.dev/ko/docs/) · [Linux 다운로드](https://flowport.pages.dev/ko/downloads/) · [릴리스 노트](https://flowport.pages.dev/ko/changelog/#v0-5-12)**
 
-## 0.5.11 업데이트
+## 0.5.12 업데이트
 
-- Beats는 압축 윈도우를 그룹 단위로 저장하고 저장이 완료된 앞부분에 대해 누적 ACK를 한 번 보냅니다. Beats와 Fluent는 저장 대기 또는 ACK 쓰기 전에 공유 디코딩 슬롯을 반환합니다.
-- Datadog Logs는 수신 확인을 반환하기 전에 JSON과 배치 한도를 검증합니다. 형식 오류는 HTTP 400, 한도 초과는 HTTP 413, 큐 포화는 재시도 가능한 HTTP 503으로 응답합니다.
-- CDC 스냅샷, SLS, 검색, Kinesis는 크기가 제한된 배치를 사용하고 저장된 지점부터 재개합니다. CloudWatch Logs는 중복 제거 커서를 압축 블록에 저장합니다.
-- NATS Core는 연결이 끊어져도 이미 읽은 버퍼 메시지를 저장합니다. MQTT, Pulsar, Pub/Sub는 ACK 전에 Worker의 수집 자격을 다시 확인합니다. 클러스터 인계에는 이전 담당 Worker가 마지막으로 보고한 영속 커서를 사용합니다.
+- 필드가 많은 MongoDB serverStatus 응답을 같은 샘플링 시각의 여러 포인트로 나누어 한 배치로 수집합니다. 중첩 BSON은 드라이버의 기본 디코더를 사용합니다.
+- PostgreSQL은 대체 호스트에도 TLS를 사용하고 직접 TLS 모드의 ALPN을 유지합니다. MongoDB는 명시적으로 재설정하지 않은 URI 신뢰 루트와 클라이언트 인증서를 유지합니다.
+- Azure Blob과 Service Bus는 각 엔드포인트의 인증서를 검증합니다. Pulsar는 새 연결에서 사설 CA를 다시 읽고 TLS 서버 이름을 지정한 경우 클라이언트 인증서와 키도 다시 읽습니다.
+- Manager의 Lookup 다운로드는 동시 최대 2개, 합계 최대 128 MiB입니다. 메모리가 부족하면 사용하지 않는 캐시를 회수합니다. 일시적으로 용량이 부족하면 관리 전송과 Worker 다운로드에 HTTP 503 및 Retry-After를 반환합니다.
 
 ## 소스에서 전달까지 하나의 경로
 
@@ -48,7 +48,7 @@
 
 ### 업그레이드 전
 
-0.5.11는 제어 프로토콜 v9와 체크포인트 형식 3을 사용합니다. 수집을 중지하고 각 노드의 데이터, master.key, Lookup 리소스와 환경 설정을 백업한 뒤 관리자와 모든 Worker를 함께 업데이트하세요. 롤백하려면 업데이트 전 백업을 복원하세요.
+0.5.12는 제어 프로토콜 v9와 체크포인트 형식 3을 사용합니다. 수집을 중지하고 각 노드의 데이터, master.key, Lookup 리소스와 환경 설정을 백업한 뒤 관리자와 모든 Worker를 함께 업데이트하세요. 롤백하려면 업데이트 전 백업을 복원하세요.
 
 ## 질문과 피드백
 

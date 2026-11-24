@@ -1,6 +1,6 @@
 # Dataflow configuration and publishing
 
-[FlowPorts 0.5.11](../../README.md) · [Docs](../index.md) · [Website](https://flowport.pages.dev/en/docs/)
+[FlowPorts 0.5.12](../../README.md) · [Docs](../index.md) · [Website](https://flowport.pages.dev/en/docs/)
 
 Unfinished drafts may omit sources, destinations or destination allocations. Explicit quotas must remain positive and within the total budget. Saving does not start intake or change the running version. Publication requires complete targets and matching quotas. Implicit allocations are materialized at publication; adding a destination never silently redistributes manual quotas.
 

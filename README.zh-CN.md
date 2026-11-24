@@ -6,14 +6,14 @@
 
 把日志、指标、链路与事件接入 **Source → Pipeline → Destinations**，在来源与观测、分析系统之间完成处理和转发。
 
-**[官网](https://flowport.pages.dev/) · [快速开始](https://flowport.pages.dev/docs/) · [Linux 下载](https://flowport.pages.dev/downloads/) · [版本说明](https://flowport.pages.dev/changelog/#v0-5-11)**
+**[官网](https://flowport.pages.dev/) · [快速开始](https://flowport.pages.dev/docs/) · [Linux 下载](https://flowport.pages.dev/downloads/) · [版本说明](https://flowport.pages.dev/changelog/#v0-5-12)**
 
-## 0.5.11 更新
+## 0.5.12 更新
 
-- Beats 将压缩窗口分组落盘，只对已持久化的前缀发送一次累计确认。Beats 和 Fluent 在等待落盘或写确认时释放共享解码名额。
-- Datadog Logs 在返回收据前校验 JSON 和批次上限。格式错误返回 HTTP 400，超限返回 HTTP 413，队列满返回可重试的 HTTP 503。
-- CDC 快照、SLS、搜索和 Kinesis 采用有界分批，并在恢复时使用已持久化的进度。CloudWatch Logs 以压缩块保存去重游标。
-- NATS Core 断连时保留已取出的缓冲消息，MQTT、Pulsar 和 Pub/Sub 在确认前复检 Worker 接入资格。集群交接使用原归属最后上报的已持久化游标。
+- MongoDB 的宽 serverStatus 结果拆成多个点，共用采样时间戳并在同一批次接收。嵌套 BSON 使用驱动默认解码。
+- PostgreSQL 切换到备用主机时继续使用 TLS，直接 TLS 模式保留 ALPN。MongoDB 保留 URI 中未被覆盖的信任根和客户端证书。
+- Azure Blob 和 Service Bus 分别校验证书。Pulsar 每次建立新连接时重读私有 CA，指定 TLS 服务端名称时也重读客户端证书和私钥。
+- 管理端最多同时下载两个 Lookup 文件，文件大小合计最多 128 MiB。内存紧张时先回收空闲缓存。管理面传输和 Worker 下载遇到临时容量不足时返回 HTTP 503 和 Retry-After。
 
 ## 从来源到送达，一条完整路径
 
@@ -48,7 +48,7 @@
 
 ### 升级前
 
-0.5.11 使用控制协议 v9、检查点格式 3。升级前停止接入并备份各节点的数据、master.key、Lookup 和环境配置，再协调升级管理端与全部 Worker。回退时恢复升级前的备份。
+0.5.12 使用控制协议 v9、检查点格式 3。升级前停止接入并备份各节点的数据、master.key、Lookup 和环境配置，再协调升级管理端与全部 Worker。回退时恢复升级前的备份。
 
 ## 问题与反馈
 

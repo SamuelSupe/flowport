@@ -1,6 +1,6 @@
 # 交付、容量与恢复
 
-[FlowPorts 0.5.11](../README.zh-CN.md) · [完整交付指南](https://flowport.pages.dev/docs/delivery/) · [English](https://flowport.pages.dev/en/docs/delivery/)
+[FlowPorts 0.5.12](../README.zh-CN.md) · [完整交付指南](https://flowport.pages.dev/docs/delivery/) · [English](https://flowport.pages.dev/en/docs/delivery/)
 
 ## 从接收到送达
 
@@ -47,3 +47,10 @@ Pipeline 在独立进程运行。超时可以终止卡住的内置函数，已�
 - Datadog Logs 在返回收据前校验 JSON 和批次上限。格式错误返回 HTTP 400，超限返回 HTTP 413，队列满返回可重试的 HTTP 503。
 - CDC 快照、SLS、搜索和 Kinesis 采用有界分批，并在恢复时使用已持久化的进度。CloudWatch Logs 以压缩块保存去重游标。
 - NATS Core 断连时保留已取出的缓冲消息，MQTT、Pulsar 和 Pub/Sub 在确认前复检 Worker 接入资格。集群交接使用原归属最后上报的已持久化游标。
+
+### 0.5.12 指标、TLS 与 Lookup
+
+- MongoDB 的宽 serverStatus 结果拆成多个点，共用采样时间戳并在同一批次接收。嵌套 BSON 使用驱动默认解码。
+- PostgreSQL 切换到备用主机时继续使用 TLS，直接 TLS 模式保留 ALPN。MongoDB 保留 URI 中未被覆盖的信任根和客户端证书。
+- Azure Blob 和 Service Bus 分别校验证书。Pulsar 每次建立新连接时重读私有 CA，指定 TLS 服务端名称时也重读客户端证书和私钥。
+- 管理端最多同时下载两个 Lookup 文件，文件大小合计最多 128 MiB。内存紧张时先回收空闲缓存。管理面传输和 Worker 下载遇到临时容量不足时返回 HTTP 503 和 Retry-After。

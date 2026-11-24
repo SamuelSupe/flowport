@@ -6,14 +6,14 @@
 
 將日誌、指標、追蹤與事件接入 **Source → Pipeline → Destinations**，在來源與觀測、分析系統之間完成處理和轉送。
 
-**[官網](https://flowport.pages.dev/zh-TW/) · [快速開始](https://flowport.pages.dev/zh-TW/docs/) · [Linux 下載](https://flowport.pages.dev/zh-TW/downloads/) · [版本說明](https://flowport.pages.dev/zh-TW/changelog/#v0-5-11)**
+**[官網](https://flowport.pages.dev/zh-TW/) · [快速開始](https://flowport.pages.dev/zh-TW/docs/) · [Linux 下載](https://flowport.pages.dev/zh-TW/downloads/) · [版本說明](https://flowport.pages.dev/zh-TW/changelog/#v0-5-12)**
 
-## 0.5.11 更新
+## 0.5.12 更新
 
-- Beats 將壓縮視窗分組寫入，只對已持久化的前綴傳送一次累計確認。Beats 和 Fluent 在等待寫入或傳送確認時釋放共用解碼名額。
-- Datadog Logs 在回傳收據前驗證 JSON 和批次上限。格式錯誤回傳 HTTP 400，超限回傳 HTTP 413，佇列已滿則回傳可重試的 HTTP 503。
-- CDC 快照、SLS、搜尋和 Kinesis 採用有界分批，並在恢復時使用已持久化的進度。CloudWatch Logs 以壓縮區塊保存去重游標。
-- NATS Core 斷線時保留已取出的緩衝訊息，MQTT、Pulsar 和 Pub/Sub 在確認前重新檢查 Worker 的接入資格。叢集交接使用原歸屬最後回報的已持久化游標。
+- MongoDB 欄位較多的 serverStatus 結果拆為多個點，共用取樣時間戳並在同一批次接收。巢狀 BSON 使用驅動程式的預設解碼。
+- PostgreSQL 切換到備用主機時繼續使用 TLS，直接 TLS 模式保留 ALPN。MongoDB 保留 URI 中未被覆寫的信任根與用戶端憑證。
+- Azure Blob 與 Service Bus 分別驗證憑證。Pulsar 建立新連線時重新讀取私有 CA，指定 TLS 伺服器名稱時也重新讀取用戶端憑證和私密金鑰。
+- 管理端最多同時下載兩個 Lookup 檔案，檔案大小合計最多 128 MiB。記憶體不足時先回收閒置快取。管理端傳輸和 Worker 下載遇到暫時容量不足時回傳 HTTP 503 和 Retry-After。
 
 ## 從來源到送達，一條完整路徑
 
@@ -48,7 +48,7 @@
 
 ### 升級前
 
-0.5.11 使用控制協定 v9、檢查點格式 3。升級前停止接入，備份各節點的資料、master.key、Lookup 和環境設定，再協調升級管理端與所有 Worker。回復舊版時還原升級前的備份。
+0.5.12 使用控制協定 v9、檢查點格式 3。升級前停止接入，備份各節點的資料、master.key、Lookup 和環境設定，再協調升級管理端與所有 Worker。回復舊版時還原升級前的備份。
 
 ## 問題與回饋
 

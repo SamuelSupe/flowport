@@ -6,14 +6,14 @@
 
 Collect, process and route logs, metrics, traces and events through **Source → Pipeline → Destinations**.
 
-**[Website](https://flowport.pages.dev/en/) · [Get started](https://flowport.pages.dev/en/docs/) · [Linux downloads](https://flowport.pages.dev/en/downloads/) · [Release notes](https://flowport.pages.dev/en/changelog/#v0-5-11)**
+**[Website](https://flowport.pages.dev/en/) · [Get started](https://flowport.pages.dev/en/docs/) · [Linux downloads](https://flowport.pages.dev/en/downloads/) · [Release notes](https://flowport.pages.dev/en/changelog/#v0-5-12)**
 
-## New in 0.5.11
+## New in 0.5.12
 
-- Beats commits compressed windows in groups and sends one cumulative acknowledgment for the durable prefix. Beats and Fluent release shared decoding slots before waiting on disk or writing acknowledgments.
-- Datadog Logs validates JSON and batch limits before issuing a receipt. Invalid input returns HTTP 400, oversized input returns HTTP 413, and a full queue returns HTTP 503 for retry.
-- CDC snapshots, SLS, search and Kinesis use bounded batches and preserve durable progress when resuming. CloudWatch Logs stores deduplication cursors as compressed blocks.
-- NATS Core saves buffered records it has already read when the connection closes. MQTT, Pulsar and Pub/Sub recheck Worker admission before acknowledging. Cluster handoff uses the latest durable cursor reported by the prior owner.
+- MongoDB retains wide serverStatus results in points with the same sampling timestamp and one batch. Nested BSON uses the driver’s default decoder.
+- PostgreSQL keeps TLS enabled on fallback hosts and preserves ALPN in direct TLS mode. MongoDB retains URI trust roots and client certificates unless explicitly replaced.
+- Azure Blob and Service Bus verify their own endpoints. Pulsar reloads the private CA on new connections and reloads the client certificate and key when a TLS server name is specified.
+- The manager allows up to two Lookup downloads totaling at most 128 MiB. Downloads reclaim idle cache under memory pressure. Manager transfers and Worker downloads return HTTP 503 with Retry-After when capacity is temporarily unavailable.
 
 ## One path, from source to delivery
 
@@ -48,7 +48,7 @@ Collect, process and route logs, metrics, traces and events through **Source →
 
 ### Before upgrading
 
-0.5.11 uses control protocol v9 and checkpoint format 3. Stop intake and back up each node’s data, master.key, Lookup resources and environment configuration before upgrading the manager and all Workers together. To roll back, restore the pre-upgrade backup.
+0.5.12 uses control protocol v9 and checkpoint format 3. Stop intake and back up each node’s data, master.key, Lookup resources and environment configuration before upgrading the manager and all Workers together. To roll back, restore the pre-upgrade backup.
 
 ## Questions and feedback
 
