@@ -6,20 +6,22 @@
 
 ログ、メトリクス、トレース、イベントを **Source → Pipeline → Destinations** で処理し、観測・分析システムへ転送します。
 
-**[公式サイト](https://flowport.pages.dev/ja/) · [はじめに](https://flowport.pages.dev/ja/docs/) · [Linux ダウンロード](https://flowport.pages.dev/ja/downloads/) · [リリースノート](https://flowport.pages.dev/ja/changelog/#v0-5-12)**
+**[公式サイト](https://flowport.pages.dev/ja/) · [はじめに](https://flowport.pages.dev/ja/docs/) · [Linux ダウンロード](https://flowport.pages.dev/ja/downloads/) · [リリースノート](https://flowport.pages.dev/ja/changelog/#v0-5-13)**
 
-## 0.5.12 の更新
+## 0.5.13 の更新
 
-- 大量のフィールドを含む MongoDB の serverStatus を同じサンプリング時刻の複数ポイントに分け、1 バッチで取り込みます。ネストした BSON はドライバーの既定のデコーダーを使用します。
-- PostgreSQL は代替ホストにも TLS を使用し、直接 TLS モードでは ALPN を維持します。MongoDB は明示的に上書きされていない URI の信頼ルートとクライアント証明書を維持します。
-- Azure Blob と Service Bus は個別のエンドポイントを検証します。Pulsar は新規接続時にプライベート CA を再読み込みし、TLS サーバー名が指定されている場合はクライアント証明書と秘密鍵も再読み込みします。
-- Manager の Lookup ダウンロードは同時に 2 件、合計 128 MiB までです。メモリ逼迫時には未使用のキャッシュを解放します。容量が一時的に不足すると、管理転送と Worker のダウンロードは HTTP 503 と Retry-After を返します。
+- FlowPort 0.5.13 は、Stream Tunnel を使用する Alibaba Cloud MaxCompute への配信に対応しました。
+- 既存テーブルへの追記に対応し、動的パーティション、列マッピング、AccessKey または STS の認証情報を使用できます。
+- Worker はパックの受領確認を WAL に保存し、未確認のレコードのみを再試行します。同一 Worker 上で Tunnel エンドポイント、プロジェクト、クォータが同じフローは、HTTP 429 または 503 を受信するとバックオフを共有します。
+- 配信は少なくとも 1 回です。書き込みに成功して受領確認が失われた場合、再試行で行が重複することがあります。
+
+[MaxCompute の設定](https://flowport.pages.dev/ja/docs/integrations/#maxcompute)
 
 ## ソースから配信まで、ひとつの経路
 
 | 収集 | 処理 | 配信 |
 | --- | --- | --- |
-| アプリ、インフラ、データベース、メッセージ基盤、クラウド向けの 72 種類の Source。 | Pipeline で解析・変換し、ローカル Lookup で補完。Tag ルーティングと上限付きキャッシュ・ウィンドウを利用できます。 | 49 種類の Destination。出力チャネルを独立させ、実行画面で確認、滞留、異常を表示します。 |
+| アプリ、インフラ、データベース、メッセージ基盤、クラウド向けの 72 種類の Source。 | Pipeline で解析・変換し、ローカル Lookup で補完。Tag ルーティングと上限付きキャッシュ・ウィンドウを利用できます。 | 50 種類の Destination。出力チャネルを独立させ、実行画面で確認、滞留、異常を表示します。 |
 
 [![FlowPort 0.5.3 をローカル Chrome で撮影。実際の HTTP レコードが受信・処理され、ローカル受信先が確認しました。隔離テスト環境の合成データを使用し、認証情報はマスクしています。](docs/images/first-delivery-0.5.3.jpg)](docs/images/first-delivery-0.5.3.jpg)
 
@@ -48,7 +50,7 @@
 
 ### 更新する前に
 
-0.5.12 は制御プロトコル v9、チェックポイント形式 3 を使用します。取り込みを停止し、各ノードのデータ、master.key、Lookup リソースと環境設定をバックアップしてから、管理サーバーと全 Worker をまとめて更新してください。ロールバック時は更新前のバックアップを復元してください。
+0.5.13 は制御プロトコル v9、チェックポイント形式 3 を使用します。取り込みを停止し、各ノードのデータ、master.key、Lookup リソースと環境設定をバックアップしてから、管理サーバーと全 Worker をまとめて更新してください。ロールバック時は更新前のバックアップを復元してください。
 
 ## 質問とフィードバック
 

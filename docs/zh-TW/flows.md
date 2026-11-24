@@ -1,6 +1,6 @@
 # 資料流設定與發布
 
-[FlowPorts 0.5.12](../../README.zh-TW.md) · [Docs](../index.md) · [Website](https://flowport.pages.dev/zh-TW/docs/)
+[FlowPorts 0.5.13](../../README.zh-TW.md) · [Docs](../index.md) · [Website](https://flowport.pages.dev/zh-TW/docs/)
 
 未完成草稿可暫缺來源、目標或目標配額；已填配額仍須為正數且合計不超預算。儲存不啟動採集或改變執行版本。發布須補齊目標及全部配額。自動配額在發布時固化，新增目標不會自動重分配手工配額。
 

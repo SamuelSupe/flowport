@@ -1,6 +1,6 @@
 # 交付、容量与恢复
 
-[FlowPorts 0.5.12](../README.zh-CN.md) · [完整交付指南](https://flowport.pages.dev/docs/delivery/) · [English](https://flowport.pages.dev/en/docs/delivery/)
+[FlowPorts 0.5.13](../README.zh-CN.md) · [完整交付指南](https://flowport.pages.dev/docs/delivery/) · [English](https://flowport.pages.dev/en/docs/delivery/)
 
 ## 从接收到送达
 
@@ -54,3 +54,11 @@ Pipeline 在独立进程运行。超时可以终止卡住的内置函数，已�
 - PostgreSQL 切换到备用主机时继续使用 TLS，直接 TLS 模式保留 ALPN。MongoDB 保留 URI 中未被覆盖的信任根和客户端证书。
 - Azure Blob 和 Service Bus 分别校验证书。Pulsar 每次建立新连接时重读私有 CA，指定 TLS 服务端名称时也重读客户端证书和私钥。
 - 管理端最多同时下载两个 Lookup 文件，文件大小合计最多 128 MiB。内存紧张时先回收空闲缓存。管理面传输和 Worker 下载遇到临时容量不足时返回 HTTP 503 和 Retry-After。
+
+### 0.5.13 MaxCompute
+
+- 追加写入已有表，支持动态分区、列映射以及 AccessKey 或 STS 凭证。
+- Worker 将包回执写入 WAL，只重试未确认的记录。同一 Worker 上使用相同 Tunnel Endpoint、Project 和 Quota 的流，在收到 HTTP 429 或 503 后共享退避。
+- 交付采用至少一次语义。写入成功后若回执丢失，重试可能产生重复行。
+
+[MaxCompute 配置指南](https://flowport.pages.dev/docs/integrations/#maxcompute)

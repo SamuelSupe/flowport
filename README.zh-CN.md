@@ -6,20 +6,22 @@
 
 把日志、指标、链路与事件接入 **Source → Pipeline → Destinations**，在来源与观测、分析系统之间完成处理和转发。
 
-**[官网](https://flowport.pages.dev/) · [快速开始](https://flowport.pages.dev/docs/) · [Linux 下载](https://flowport.pages.dev/downloads/) · [版本说明](https://flowport.pages.dev/changelog/#v0-5-12)**
+**[官网](https://flowport.pages.dev/) · [快速开始](https://flowport.pages.dev/docs/) · [Linux 下载](https://flowport.pages.dev/downloads/) · [版本说明](https://flowport.pages.dev/changelog/#v0-5-13)**
 
-## 0.5.12 更新
+## 0.5.13 更新
 
-- MongoDB 的宽 serverStatus 结果拆成多个点，共用采样时间戳并在同一批次接收。嵌套 BSON 使用驱动默认解码。
-- PostgreSQL 切换到备用主机时继续使用 TLS，直接 TLS 模式保留 ALPN。MongoDB 保留 URI 中未被覆盖的信任根和客户端证书。
-- Azure Blob 和 Service Bus 分别校验证书。Pulsar 每次建立新连接时重读私有 CA，指定 TLS 服务端名称时也重读客户端证书和私钥。
-- 管理端最多同时下载两个 Lookup 文件，文件大小合计最多 128 MiB。内存紧张时先回收空闲缓存。管理面传输和 Worker 下载遇到临时容量不足时返回 HTTP 503 和 Retry-After。
+- FlowPort 0.5.13 新增通过 Stream Tunnel 写入 Alibaba Cloud MaxCompute 的发送目标。
+- 追加写入已有表，支持动态分区、列映射以及 AccessKey 或 STS 凭证。
+- Worker 将包回执写入 WAL，只重试未确认的记录。同一 Worker 上使用相同 Tunnel Endpoint、Project 和 Quota 的流，在收到 HTTP 429 或 503 后共享退避。
+- 交付采用至少一次语义。写入成功后若回执丢失，重试可能产生重复行。
+
+[MaxCompute 配置指南](https://flowport.pages.dev/docs/integrations/#maxcompute)
 
 ## 从来源到送达，一条完整路径
 
 | 接入 | 处理 | 发送 |
 | --- | --- | --- |
-| 72 种 Source，覆盖应用、基础设施、数据库、消息系统和云服务。 | 通过 Pipeline 解析和转换，使用本地 Lookup 富化，按 Tag 分流，并支持有界缓存与窗口。 | 49 种 Destination，目标通道独立投递，在运行页查看确认、积压与异常。 |
+| 72 种 Source，覆盖应用、基础设施、数据库、消息系统和云服务。 | 通过 Pipeline 解析和转换，使用本地 Lookup 富化，按 Tag 分流，并支持有界缓存与窗口。 | 50 种 Destination，目标通道独立投递，在运行页查看确认、积压与异常。 |
 
 [![FlowPort 0.5.3 本机 Chrome 实拍：HTTP 数据完成接收、处理与本地目标确认。使用隔离测试实例与合成数据，凭证保持打码。](docs/images/first-delivery-0.5.3.jpg)](docs/images/first-delivery-0.5.3.jpg)
 
@@ -48,7 +50,7 @@
 
 ### 升级前
 
-0.5.12 使用控制协议 v9、检查点格式 3。升级前停止接入并备份各节点的数据、master.key、Lookup 和环境配置，再协调升级管理端与全部 Worker。回退时恢复升级前的备份。
+0.5.13 使用控制协议 v9、检查点格式 3。升级前停止接入并备份各节点的数据、master.key、Lookup 和环境配置，再协调升级管理端与全部 Worker。回退时恢复升级前的备份。
 
 ## 问题与反馈
 

@@ -6,20 +6,22 @@
 
 Collect, process and route logs, metrics, traces and events through **Source → Pipeline → Destinations**.
 
-**[Website](https://flowport.pages.dev/en/) · [Get started](https://flowport.pages.dev/en/docs/) · [Linux downloads](https://flowport.pages.dev/en/downloads/) · [Release notes](https://flowport.pages.dev/en/changelog/#v0-5-12)**
+**[Website](https://flowport.pages.dev/en/) · [Get started](https://flowport.pages.dev/en/docs/) · [Linux downloads](https://flowport.pages.dev/en/downloads/) · [Release notes](https://flowport.pages.dev/en/changelog/#v0-5-13)**
 
-## New in 0.5.12
+## New in 0.5.13
 
-- MongoDB retains wide serverStatus results in points with the same sampling timestamp and one batch. Nested BSON uses the driver’s default decoder.
-- PostgreSQL keeps TLS enabled on fallback hosts and preserves ALPN in direct TLS mode. MongoDB retains URI trust roots and client certificates unless explicitly replaced.
-- Azure Blob and Service Bus verify their own endpoints. Pulsar reloads the private CA on new connections and reloads the client certificate and key when a TLS server name is specified.
-- The manager allows up to two Lookup downloads totaling at most 128 MiB. Downloads reclaim idle cache under memory pressure. Manager transfers and Worker downloads return HTTP 503 with Retry-After when capacity is temporarily unavailable.
+- FlowPort 0.5.13 adds Alibaba Cloud MaxCompute delivery through Stream Tunnel.
+- Append to existing tables with dynamic partitions, column mappings and AccessKey or STS credentials.
+- Workers save pack receipts in the WAL and retry only unconfirmed records. Flows sharing a Tunnel endpoint, project and quota on the same Worker share backoff after HTTP 429 or 503.
+- Delivery is at least once. A retry can duplicate rows if a commit succeeded and its receipt was lost.
+
+[MaxCompute setup](https://flowport.pages.dev/en/docs/integrations/#maxcompute)
 
 ## One path, from source to delivery
 
 | Collect | Transform | Deliver |
 | --- | --- | --- |
-| 72 Source types for application, infrastructure, database, broker and cloud data. | Parse and enrich with Pipeline, local Lookup data, tag routing and bounded cache/window state. | 49 Destination types, independent output channels and runtime delivery status. |
+| 72 Source types for application, infrastructure, database, broker and cloud data. | Parse and enrich with Pipeline, local Lookup data, tag routing and bounded cache/window state. | 50 Destination types, independent output channels and runtime delivery status. |
 
 [![FlowPort 0.5.3 in native Chrome: real HTTP records received, processed and acknowledged by a local receiver. Isolated test instance with synthetic data; credentials are masked.](docs/images/first-delivery-0.5.3.jpg)](docs/images/first-delivery-0.5.3.jpg)
 
@@ -48,7 +50,7 @@ Collect, process and route logs, metrics, traces and events through **Source →
 
 ### Before upgrading
 
-0.5.12 uses control protocol v9 and checkpoint format 3. Stop intake and back up each node’s data, master.key, Lookup resources and environment configuration before upgrading the manager and all Workers together. To roll back, restore the pre-upgrade backup.
+0.5.13 uses control protocol v9 and checkpoint format 3. Stop intake and back up each node’s data, master.key, Lookup resources and environment configuration before upgrading the manager and all Workers together. To roll back, restore the pre-upgrade backup.
 
 ## Questions and feedback
 

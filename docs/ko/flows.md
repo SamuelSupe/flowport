@@ -1,6 +1,6 @@
 # 데이터 흐름 구성과 게시
 
-[FlowPorts 0.5.12](../../README.ko.md) · [Docs](../index.md) · [Website](https://flowport.pages.dev/ko/docs/)
+[FlowPorts 0.5.13](../../README.ko.md) · [Docs](../index.md) · [Website](https://flowport.pages.dev/ko/docs/)
 
 미완성 초안은 소스, 대상 또는 대상 할당량이 없어도 저장할 수 있습니다. 명시한 할당량은 양수이고 합계 예산 이내여야 합니다. 저장은 수집을 시작하거나 실행 버전을 변경하지 않습니다. 게시에는 완전한 대상과 해당 할당량이 필요합니다. 자동 할당은 게시 시 확정되며 대상 추가로 수동 할당량이 자동 재분배되지는 않습니다.
 

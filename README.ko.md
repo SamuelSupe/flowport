@@ -6,20 +6,22 @@
 
 로그, 메트릭, 트레이스와 이벤트를 **Source → Pipeline → Destinations**로 처리하여 관측 및 분석 시스템에 전달합니다.
 
-**[공식 사이트](https://flowport.pages.dev/ko/) · [시작하기](https://flowport.pages.dev/ko/docs/) · [Linux 다운로드](https://flowport.pages.dev/ko/downloads/) · [릴리스 노트](https://flowport.pages.dev/ko/changelog/#v0-5-12)**
+**[공식 사이트](https://flowport.pages.dev/ko/) · [시작하기](https://flowport.pages.dev/ko/docs/) · [Linux 다운로드](https://flowport.pages.dev/ko/downloads/) · [릴리스 노트](https://flowport.pages.dev/ko/changelog/#v0-5-13)**
 
-## 0.5.12 업데이트
+## 0.5.13 업데이트
 
-- 필드가 많은 MongoDB serverStatus 응답을 같은 샘플링 시각의 여러 포인트로 나누어 한 배치로 수집합니다. 중첩 BSON은 드라이버의 기본 디코더를 사용합니다.
-- PostgreSQL은 대체 호스트에도 TLS를 사용하고 직접 TLS 모드의 ALPN을 유지합니다. MongoDB는 명시적으로 재설정하지 않은 URI 신뢰 루트와 클라이언트 인증서를 유지합니다.
-- Azure Blob과 Service Bus는 각 엔드포인트의 인증서를 검증합니다. Pulsar는 새 연결에서 사설 CA를 다시 읽고 TLS 서버 이름을 지정한 경우 클라이언트 인증서와 키도 다시 읽습니다.
-- Manager의 Lookup 다운로드는 동시 최대 2개, 합계 최대 128 MiB입니다. 메모리가 부족하면 사용하지 않는 캐시를 회수합니다. 일시적으로 용량이 부족하면 관리 전송과 Worker 다운로드에 HTTP 503 및 Retry-After를 반환합니다.
+- FlowPort 0.5.13은 Stream Tunnel을 통한 Alibaba Cloud MaxCompute 전송을 지원합니다.
+- 기존 테이블에 데이터를 추가하며 동적 파티션, 열 매핑 및 AccessKey 또는 STS 자격 증명을 지원합니다.
+- Worker는 팩 수신 확인을 WAL에 저장하고 미확인 레코드만 재시도합니다. 같은 Worker에서 Tunnel 엔드포인트, 프로젝트, 할당량이 동일한 흐름은 HTTP 429 또는 503 이후 백오프를 공유합니다.
+- 최소 한 번 전송 방식을 사용합니다. 쓰기에 성공한 뒤 수신 확인이 유실되면 재시도로 행이 중복될 수 있습니다.
+
+[MaxCompute 설정](https://flowport.pages.dev/ko/docs/integrations/#maxcompute)
 
 ## 소스에서 전달까지 하나의 경로
 
 | 수집 | 처리 | 전달 |
 | --- | --- | --- |
-| 애플리케이션, 인프라, 데이터베이스, 메시지 시스템과 클라우드를 위한 72가지 Source. | Pipeline으로 파싱하고 변환하며 로컬 Lookup으로 보강합니다. Tag 라우팅과 제한된 캐시·창 상태를 지원합니다. | 48가지 Destination. 독립 출력 채널과 실행 화면에서 확인, 적체 및 오류를 살펴봅니다. |
+| 애플리케이션, 인프라, 데이터베이스, 메시지 시스템과 클라우드를 위한 72가지 Source. | Pipeline으로 파싱하고 변환하며 로컬 Lookup으로 보강합니다. Tag 라우팅과 제한된 캐시·창 상태를 지원합니다. | 50가지 Destination. 독립 출력 채널과 실행 화면에서 확인, 적체 및 오류를 살펴봅니다. |
 
 [![로컬 Chrome에서 촬영한 FlowPort 0.5.3입니다. 실제 HTTP 레코드를 수신·처리하고 로컬 수신기가 확인했습니다. 격리된 테스트 환경과 합성 데이터를 사용하며 인증 정보는 가렸습니다.](docs/images/first-delivery-0.5.3.jpg)](docs/images/first-delivery-0.5.3.jpg)
 
@@ -48,7 +50,7 @@
 
 ### 업그레이드 전
 
-0.5.12는 제어 프로토콜 v9와 체크포인트 형식 3을 사용합니다. 수집을 중지하고 각 노드의 데이터, master.key, Lookup 리소스와 환경 설정을 백업한 뒤 관리자와 모든 Worker를 함께 업데이트하세요. 롤백하려면 업데이트 전 백업을 복원하세요.
+0.5.13는 제어 프로토콜 v9와 체크포인트 형식 3을 사용합니다. 수집을 중지하고 각 노드의 데이터, master.key, Lookup 리소스와 환경 설정을 백업한 뒤 관리자와 모든 Worker를 함께 업데이트하세요. 롤백하려면 업데이트 전 백업을 복원하세요.
 
 ## 질문과 피드백
 
