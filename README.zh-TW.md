@@ -6,16 +6,14 @@
 
 將日誌、指標、追蹤與事件接入 **Source → Pipeline → Destinations**，在來源與觀測、分析系統之間完成處理和轉送。
 
-**[官網](https://flowport.pages.dev/zh-TW/) · [快速開始](https://flowport.pages.dev/zh-TW/docs/) · [Linux 下載](https://flowport.pages.dev/zh-TW/downloads/) · [版本說明](https://flowport.pages.dev/zh-TW/changelog/#v0-5-13)**
+**[官網](https://flowport.pages.dev/zh-TW/) · [快速開始](https://flowport.pages.dev/zh-TW/docs/) · [Linux 下載](https://flowport.pages.dev/zh-TW/downloads/) · [版本說明](https://flowport.pages.dev/zh-TW/changelog/#v0-5-14)**
 
-## 0.5.13 更新
+## 0.5.14 更新
 
-- FlowPort 0.5.13 新增透過 Stream Tunnel 寫入 Alibaba Cloud MaxCompute 的傳送目標。
-- 追加寫入既有資料表，支援動態分割區、欄位對應以及 AccessKey 或 STS 憑證。
-- Worker 將資料包回執寫入 WAL，只重試未確認的記錄。同一 Worker 上使用相同 Tunnel Endpoint、Project 和 Quota 的資料流，在收到 HTTP 429 或 503 後共用退避。
-- 交付採用至少一次語意。寫入成功後若回執遺失，重試可能產生重複資料列。
-
-[MaxCompute 設定指南](https://flowport.pages.dev/zh-TW/docs/integrations/#maxcompute)
+- HTTP 目標明確回傳 413 時，FlowPort 按記錄拆分批次並保留已確認回執。單筆記錄仍超限時，保留在佇列中退避重試。
+- Kafka 在首次拉取前儲存並提交 latest 位點。Kinesis 和 SLS 按分片獨立讀取及退避。物件儲存目標重試同一持久批次時複用物件名稱。
+- Worker 在交付引擎結束後回報最終狀態。Manager 將歸屬、游標、授權及命令變更持久化，例行續租更新記憶體快照。
+- Pipeline 逾時後保留佇列輸入及收據以重試，視窗刷新使用批次預算。預覽保留大整數精度，長欄位可按需展開。
 
 ## 從來源到送達，一條完整路徑
 

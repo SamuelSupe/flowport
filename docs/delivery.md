@@ -1,6 +1,6 @@
 # 交付、容量与恢复
 
-[FlowPorts 0.5.13](../README.zh-CN.md) · [完整交付指南](https://flowport.pages.dev/docs/delivery/) · [English](https://flowport.pages.dev/en/docs/delivery/)
+[FlowPorts 0.5.14](../README.zh-CN.md) · [完整交付指南](https://flowport.pages.dev/docs/delivery/) · [English](https://flowport.pages.dev/en/docs/delivery/)
 
 ## 从接收到送达
 
@@ -62,3 +62,10 @@ Pipeline 在独立进程运行。超时可以终止卡住的内置函数，已�
 - 交付采用至少一次语义。写入成功后若回执丢失，重试可能产生重复行。
 
 [MaxCompute 配置指南](https://flowport.pages.dev/docs/integrations/#maxcompute)
+
+### 0.5.14 投递与恢复
+
+- HTTP 目标明确返回 413 时，FlowPort 按记录拆批并保留已确认回执。单条记录仍超限时，保留在队列中退避重试。
+- Kafka 在首次拉取前保存并提交 latest 位点。Kinesis 和 SLS 按分片独立读取及退避。对象存储目标重试同一持久批次时复用对象名。
+- Worker 在投递引擎退出后上报终态。Manager 持久化归属、游标、授权及命令变更，普通续租更新内存快照。
+- Pipeline 超时后保留队列输入及收据重试，窗口刷新使用批次预算。预览保留大整数精度，长字段可按需展开。

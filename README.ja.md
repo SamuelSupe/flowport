@@ -6,16 +6,14 @@
 
 ログ、メトリクス、トレース、イベントを **Source → Pipeline → Destinations** で処理し、観測・分析システムへ転送します。
 
-**[公式サイト](https://flowport.pages.dev/ja/) · [はじめに](https://flowport.pages.dev/ja/docs/) · [Linux ダウンロード](https://flowport.pages.dev/ja/downloads/) · [リリースノート](https://flowport.pages.dev/ja/changelog/#v0-5-13)**
+**[公式サイト](https://flowport.pages.dev/ja/) · [はじめに](https://flowport.pages.dev/ja/docs/) · [Linux ダウンロード](https://flowport.pages.dev/ja/downloads/) · [リリースノート](https://flowport.pages.dev/ja/changelog/#v0-5-14)**
 
-## 0.5.13 の更新
+## 0.5.14 の更新
 
-- FlowPort 0.5.13 は、Stream Tunnel を使用する Alibaba Cloud MaxCompute への配信に対応しました。
-- 既存テーブルへの追記に対応し、動的パーティション、列マッピング、AccessKey または STS の認証情報を使用できます。
-- Worker はパックの受領確認を WAL に保存し、未確認のレコードのみを再試行します。同一 Worker 上で Tunnel エンドポイント、プロジェクト、クォータが同じフローは、HTTP 429 または 503 を受信するとバックオフを共有します。
-- 配信は少なくとも 1 回です。書き込みに成功して受領確認が失われた場合、再試行で行が重複することがあります。
-
-[MaxCompute の設定](https://flowport.pages.dev/ja/docs/integrations/#maxcompute)
+- HTTP 送信先が 413 でバッチを明示的に拒否すると、FlowPort はレコード単位で分割し、確認済みの受領情報を保持します。単一でも上限を超えるレコードはキューに残し、バックオフして再試行します。
+- Kafka は最初の取得前に latest オフセットを保存してコミットします。Kinesis と SLS はシャードごとに取得とバックオフを行います。オブジェクトストレージへの配信では、同じ永続化済みバッチの再試行に同じキーを使います。
+- Worker は配信エンジンの終了後に最終状態を報告します。Manager は担当、カーソル、許可、コマンドの変更を永続化し、通常のリース更新はメモリ上のスナップショットに反映します。
+- Pipeline がタイムアウトしても、キュー内の入力と受領情報は再試行用に保持されます。ウィンドウのフラッシュにはバッチの実行予算を使います。プレビューでは大きな整数の精度を保ち、長いフィールドを必要に応じて展開できます。
 
 ## ソースから配信まで、ひとつの経路
 

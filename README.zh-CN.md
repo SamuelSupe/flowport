@@ -6,16 +6,14 @@
 
 把日志、指标、链路与事件接入 **Source → Pipeline → Destinations**，在来源与观测、分析系统之间完成处理和转发。
 
-**[官网](https://flowport.pages.dev/) · [快速开始](https://flowport.pages.dev/docs/) · [Linux 下载](https://flowport.pages.dev/downloads/) · [版本说明](https://flowport.pages.dev/changelog/#v0-5-13)**
+**[官网](https://flowport.pages.dev/) · [快速开始](https://flowport.pages.dev/docs/) · [Linux 下载](https://flowport.pages.dev/downloads/) · [版本说明](https://flowport.pages.dev/changelog/#v0-5-14)**
 
-## 0.5.13 更新
+## 0.5.14 更新
 
-- FlowPort 0.5.13 新增通过 Stream Tunnel 写入 Alibaba Cloud MaxCompute 的发送目标。
-- 追加写入已有表，支持动态分区、列映射以及 AccessKey 或 STS 凭证。
-- Worker 将包回执写入 WAL，只重试未确认的记录。同一 Worker 上使用相同 Tunnel Endpoint、Project 和 Quota 的流，在收到 HTTP 429 或 503 后共享退避。
-- 交付采用至少一次语义。写入成功后若回执丢失，重试可能产生重复行。
-
-[MaxCompute 配置指南](https://flowport.pages.dev/docs/integrations/#maxcompute)
+- HTTP 目标明确返回 413 时，FlowPort 按记录拆批并保留已确认回执。单条记录仍超限时，保留在队列中退避重试。
+- Kafka 在首次拉取前保存并提交 latest 位点。Kinesis 和 SLS 按分片独立读取及退避。对象存储目标重试同一持久批次时复用对象名。
+- Worker 在投递引擎退出后上报终态。Manager 持久化归属、游标、授权及命令变更，普通续租更新内存快照。
+- Pipeline 超时后保留队列输入及收据重试，窗口刷新使用批次预算。预览保留大整数精度，长字段可按需展开。
 
 ## 从来源到送达，一条完整路径
 

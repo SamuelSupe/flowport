@@ -6,16 +6,14 @@
 
 Collect, process and route logs, metrics, traces and events through **Source → Pipeline → Destinations**.
 
-**[Website](https://flowport.pages.dev/en/) · [Get started](https://flowport.pages.dev/en/docs/) · [Linux downloads](https://flowport.pages.dev/en/downloads/) · [Release notes](https://flowport.pages.dev/en/changelog/#v0-5-13)**
+**[Website](https://flowport.pages.dev/en/) · [Get started](https://flowport.pages.dev/en/docs/) · [Linux downloads](https://flowport.pages.dev/en/downloads/) · [Release notes](https://flowport.pages.dev/en/changelog/#v0-5-14)**
 
-## New in 0.5.13
+## New in 0.5.14
 
-- FlowPort 0.5.13 adds Alibaba Cloud MaxCompute delivery through Stream Tunnel.
-- Append to existing tables with dynamic partitions, column mappings and AccessKey or STS credentials.
-- Workers save pack receipts in the WAL and retry only unconfirmed records. Flows sharing a Tunnel endpoint, project and quota on the same Worker share backoff after HTTP 429 or 503.
-- Delivery is at least once. A retry can duplicate rows if a commit succeeded and its receipt was lost.
-
-[MaxCompute setup](https://flowport.pages.dev/en/docs/integrations/#maxcompute)
+- After an HTTP destination explicitly rejects a batch with 413, FlowPort splits it by record and retains confirmed receipts. Oversized individual records stay queued with backoff.
+- Kafka saves and commits the initial latest offset before polling. Kinesis and SLS read and back off independently by shard. Object destinations reuse the same key for retries of a durable batch.
+- Workers report final state after the delivery engine exits. The Manager persists changes to ownership, cursors, grants and commands. Routine lease renewals update the in-memory snapshot.
+- Pipeline timeouts preserve queued input and receipts for retry. Window flushing uses the batch budget. Preview preserves large integer precision and expands long fields on demand.
 
 ## One path, from source to delivery
 

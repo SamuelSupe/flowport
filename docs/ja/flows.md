@@ -1,6 +1,6 @@
 # データフローの設定と公開
 
-[FlowPorts 0.5.13](../../README.ja.md) · [Docs](../index.md) · [Website](https://flowport.pages.dev/ja/docs/)
+[FlowPorts 0.5.14](../../README.ja.md) · [Docs](../index.md) · [Website](https://flowport.pages.dev/ja/docs/)
 
 未完成の下書きはソース、送信先、その容量割当が未設定でも保存できます。明示した容量は正数で合計予算内である必要があります。保存で収集は開始せず、稼働中の版も変わりません。公開には送信先と全割当が必要です。自動割当は公開時に確定し、送信先を追加しても手動割当は自動再配分されません。
 

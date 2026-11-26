@@ -6,16 +6,14 @@
 
 로그, 메트릭, 트레이스와 이벤트를 **Source → Pipeline → Destinations**로 처리하여 관측 및 분석 시스템에 전달합니다.
 
-**[공식 사이트](https://flowport.pages.dev/ko/) · [시작하기](https://flowport.pages.dev/ko/docs/) · [Linux 다운로드](https://flowport.pages.dev/ko/downloads/) · [릴리스 노트](https://flowport.pages.dev/ko/changelog/#v0-5-13)**
+**[공식 사이트](https://flowport.pages.dev/ko/) · [시작하기](https://flowport.pages.dev/ko/docs/) · [Linux 다운로드](https://flowport.pages.dev/ko/downloads/) · [릴리스 노트](https://flowport.pages.dev/ko/changelog/#v0-5-14)**
 
-## 0.5.13 업데이트
+## 0.5.14 업데이트
 
-- FlowPort 0.5.13은 Stream Tunnel을 통한 Alibaba Cloud MaxCompute 전송을 지원합니다.
-- 기존 테이블에 데이터를 추가하며 동적 파티션, 열 매핑 및 AccessKey 또는 STS 자격 증명을 지원합니다.
-- Worker는 팩 수신 확인을 WAL에 저장하고 미확인 레코드만 재시도합니다. 같은 Worker에서 Tunnel 엔드포인트, 프로젝트, 할당량이 동일한 흐름은 HTTP 429 또는 503 이후 백오프를 공유합니다.
-- 최소 한 번 전송 방식을 사용합니다. 쓰기에 성공한 뒤 수신 확인이 유실되면 재시도로 행이 중복될 수 있습니다.
-
-[MaxCompute 설정](https://flowport.pages.dev/ko/docs/integrations/#maxcompute)
+- HTTP 대상이 413으로 배치를 명시적으로 거부하면 FlowPort는 레코드 단위로 배치를 나누고 확인된 수신 응답을 보존합니다. 개별 레코드가 한도를 초과하면 큐에 유지하고 백오프 후 재시도합니다.
+- Kafka는 첫 폴링 전에 latest 오프셋을 저장하고 커밋합니다. Kinesis와 SLS는 샤드별로 읽기와 백오프를 처리합니다. 객체 스토리지 대상은 같은 영속 배치를 재시도할 때 동일한 키를 사용합니다.
+- Worker는 전송 엔진이 종료된 뒤 최종 상태를 보고합니다. Manager는 소유권, 커서, 권한 및 명령 변경을 영속화하고 일반 리스 갱신은 메모리 스냅샷에 반영합니다.
+- Pipeline이 시간 초과되면 대기 중인 입력과 수신 응답을 유지해 재시도합니다. 윈도우 플러시는 배치 실행 한도를 사용합니다. 미리 보기는 큰 정수의 정밀도를 유지하며 긴 필드를 필요할 때 펼칠 수 있습니다.
 
 ## 소스에서 전달까지 하나의 경로
 
