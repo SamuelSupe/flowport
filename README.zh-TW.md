@@ -6,14 +6,12 @@
 
 將日誌、指標、追蹤與事件接入 **Source → Pipeline → Destinations**，在來源與觀測、分析系統之間完成處理和轉送。
 
-**[官網](https://flowport.pages.dev/zh-TW/) · [快速開始](https://flowport.pages.dev/zh-TW/docs/) · [Linux 下載](https://flowport.pages.dev/zh-TW/downloads/) · [版本說明](https://flowport.pages.dev/zh-TW/changelog/#v0-5-14)**
+**[官網](https://flowport.pages.dev/zh-TW/) · [快速開始](https://flowport.pages.dev/zh-TW/docs/) · [Linux 下載](https://flowport.pages.dev/zh-TW/downloads/) · [版本說明](https://flowport.pages.dev/zh-TW/changelog/#v0-5-15)**
 
-## 0.5.14 更新
+## 0.5.15 更新
 
-- HTTP 目標明確回傳 413 時，FlowPort 按記錄拆分批次並保留已確認回執。單筆記錄仍超限時，保留在佇列中退避重試。
-- Kafka 在首次拉取前儲存並提交 latest 位點。Kinesis 和 SLS 按分片獨立讀取及退避。物件儲存目標重試同一持久批次時複用物件名稱。
-- Worker 在交付引擎結束後回報最終狀態。Manager 將歸屬、游標、授權及命令變更持久化，例行續租更新記憶體快照。
-- Pipeline 逾時後保留佇列輸入及收據以重試，視窗刷新使用批次預算。預覽保留大整數精度，長欄位可按需展開。
+- Pipeline 達到狀態容量上限時，Worker 回復本次試跑的狀態與部分輸出，保留已確認入佇列的批次、原 Pipeline 版本與來源回執，將退避資訊持久化後重試。
+- 在 OrbStack 以相同負載複測一小時，穩態接入每秒 1,271.07 筆，P99 為 226.94 毫秒。兩次 SIGKILL 重啟後，逐筆核對輸出與視窗彙總，未發現缺失或重複，佇列最後排空。
 
 ## 從來源到送達，一條完整路徑
 

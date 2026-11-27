@@ -6,14 +6,12 @@
 
 로그, 메트릭, 트레이스와 이벤트를 **Source → Pipeline → Destinations**로 처리하여 관측 및 분석 시스템에 전달합니다.
 
-**[공식 사이트](https://flowport.pages.dev/ko/) · [시작하기](https://flowport.pages.dev/ko/docs/) · [Linux 다운로드](https://flowport.pages.dev/ko/downloads/) · [릴리스 노트](https://flowport.pages.dev/ko/changelog/#v0-5-14)**
+**[공식 사이트](https://flowport.pages.dev/ko/) · [시작하기](https://flowport.pages.dev/ko/docs/) · [Linux 다운로드](https://flowport.pages.dev/ko/downloads/) · [릴리스 노트](https://flowport.pages.dev/ko/changelog/#v0-5-15)**
 
-## 0.5.14 업데이트
+## 0.5.15 업데이트
 
-- HTTP 대상이 413으로 배치를 명시적으로 거부하면 FlowPort는 레코드 단위로 배치를 나누고 확인된 수신 응답을 보존합니다. 개별 레코드가 한도를 초과하면 큐에 유지하고 백오프 후 재시도합니다.
-- Kafka는 첫 폴링 전에 latest 오프셋을 저장하고 커밋합니다. Kinesis와 SLS는 샤드별로 읽기와 백오프를 처리합니다. 객체 스토리지 대상은 같은 영속 배치를 재시도할 때 동일한 키를 사용합니다.
-- Worker는 전송 엔진이 종료된 뒤 최종 상태를 보고합니다. Manager는 소유권, 커서, 권한 및 명령 변경을 영속화하고 일반 리스 갱신은 메모리 스냅샷에 반영합니다.
-- Pipeline이 시간 초과되면 대기 중인 입력과 수신 응답을 유지해 재시도합니다. 윈도우 플러시는 배치 실행 한도를 사용합니다. 미리 보기는 큰 정수의 정밀도를 유지하며 긴 필드를 필요할 때 펼칠 수 있습니다.
+- Pipeline 상태 한도에 도달하면 Worker가 임시 상태와 부분 출력을 롤백합니다. 수집이 확인된 배치, 원래 Pipeline 버전, 소스 수신 응답을 보존하고 백오프를 영속화한 뒤 재시도합니다.
+- OrbStack에서 동일한 부하로 한 시간 동안 재검증한 결과, 정상 상태 수집 처리량은 초당 1,271.07건, P99는 226.94ms였습니다. 두 차례 SIGKILL 후 재시작하여 개별 출력과 윈도우 집계를 대조했고, 누락이나 중복 없이 큐가 모두 비워졌습니다.
 
 ## 소스에서 전달까지 하나의 경로
 

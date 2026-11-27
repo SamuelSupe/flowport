@@ -6,14 +6,12 @@
 
 Collect, process and route logs, metrics, traces and events through **Source → Pipeline → Destinations**.
 
-**[Website](https://flowport.pages.dev/en/) · [Get started](https://flowport.pages.dev/en/docs/) · [Linux downloads](https://flowport.pages.dev/en/downloads/) · [Release notes](https://flowport.pages.dev/en/changelog/#v0-5-14)**
+**[Website](https://flowport.pages.dev/en/) · [Get started](https://flowport.pages.dev/en/docs/) · [Linux downloads](https://flowport.pages.dev/en/downloads/) · [Release notes](https://flowport.pages.dev/en/changelog/#v0-5-15)**
 
-## New in 0.5.14
+## New in 0.5.15
 
-- After an HTTP destination explicitly rejects a batch with 413, FlowPort splits it by record and retains confirmed receipts. Oversized individual records stay queued with backoff.
-- Kafka saves and commits the initial latest offset before polling. Kinesis and SLS read and back off independently by shard. Object destinations reuse the same key for retries of a durable batch.
-- Workers report final state after the delivery engine exits. The Manager persists changes to ownership, cursors, grants and commands. Routine lease renewals update the in-memory snapshot.
-- Pipeline timeouts preserve queued input and receipts for retry. Window flushing uses the batch budget. Preview preserves large integer precision and expands long fields on demand.
+- When the Pipeline reaches its state limit, the Worker rolls back tentative state and partial output. Acknowledged batches stay queued with their original Pipeline version and source receipt, then retry with durable backoff.
+- In a one-hour OrbStack run at the same mixed workload, steady intake reached 1,271.07 records/s at a P99 of 226.94 ms. After two SIGKILL restarts, checks found no missing or duplicate output IDs or window aggregates. The queue drained completely.
 
 ## One path, from source to delivery
 

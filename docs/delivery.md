@@ -1,6 +1,6 @@
 # 交付、容量与恢复
 
-[FlowPorts 0.5.14](../README.zh-CN.md) · [完整交付指南](https://flowport.pages.dev/docs/delivery/) · [English](https://flowport.pages.dev/en/docs/delivery/)
+[FlowPorts 0.5.15](../README.zh-CN.md) · [完整交付指南](https://flowport.pages.dev/docs/delivery/) · [English](https://flowport.pages.dev/en/docs/delivery/)
 
 ## 从接收到送达
 
@@ -11,7 +11,8 @@
 | 输入区满 | 拒收新输入，HTTP 返回可重试的错误。 |
 | 输出区满 | 保留整个待处理输入或窗口，容量释放后再提交。 |
 | 发送失败 | 保留未确认载荷并退避重试。 |
-| 解析或 Pipeline 失败 | 记录诊断，按错误类型保留或释放输入。 |
+| Pipeline 状态容量达到上限 | 保留队头和来源回执，持久退避后重试。 |
+| 解析或其他 Pipeline 失败 | 记录诊断，按错误类型保留或释放输入。 |
 
 ## 通道容量与重试
 
@@ -62,6 +63,10 @@ Pipeline 在独立进程运行。超时可以终止卡住的内置函数，已�
 - 交付采用至少一次语义。写入成功后若回执丢失，重试可能产生重复行。
 
 [MaxCompute 配置指南](https://flowport.pages.dev/docs/integrations/#maxcompute)
+
+### 0.5.15 Pipeline 状态容量恢复
+
+遇到 `state_limit` 时，Worker 回滚本次试跑的状态和部分输出，保留原批次、入队时的 Pipeline 版本及来源回执，持久退避后重试。持续超限时可检查或导出队头。旧版已释放的载荷须从上游副本重放。
 
 ### 0.5.14 投递与恢复
 
