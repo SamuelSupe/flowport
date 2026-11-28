@@ -6,12 +6,12 @@
 
 把日志、指标、链路与事件接入 **Source → Pipeline → Destinations**，在来源与观测、分析系统之间完成处理和转发。
 
-**[官网](https://flowport.pages.dev/) · [快速开始](https://flowport.pages.dev/docs/) · [Linux 下载](https://flowport.pages.dev/downloads/) · [版本说明](https://flowport.pages.dev/changelog/#v0-5-15)**
+**[官网](https://flowport.pages.dev/) · [快速开始](https://flowport.pages.dev/docs/) · [Linux 下载](https://flowport.pages.dev/downloads/) · [版本说明](https://flowport.pages.dev/changelog/#v0-5-16)**
 
-## 0.5.15 更新
+## 0.5.16 更新
 
-- Pipeline 达到状态容量上限时，Worker 回滚本次试跑的状态和部分输出，保留已确认入队的批次、原 Pipeline 版本及来源回执，持久退避后重试。
-- OrbStack 同负载复测一小时，稳态接入 1,271.07 条/秒，P99 为 226.94 毫秒。两次 SIGKILL 重启后，逐条输出与窗口聚合对账均未发现丢失或重复，队列已排空。
+- 数据库初始快照按确认新增的主键恢复。MySQL CDC 让 GTID 游标与已处理事务对齐。Prometheus 遵守配置的完整抓取期限，文件描述符不足后可继续回收 WAL。
+- 升级前核对未完成的 CDC 快照并备份各节点。OrbStack 的 48 个来源与目标协议组合通过。单 Worker 两次强杀重启后交付全部 9,400 条预期输出。
 
 ## 从来源到送达，一条完整路径
 

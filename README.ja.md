@@ -6,12 +6,12 @@
 
 ログ、メトリクス、トレース、イベントを **Source → Pipeline → Destinations** で処理し、観測・分析システムへ転送します。
 
-**[公式サイト](https://flowport.pages.dev/ja/) · [はじめに](https://flowport.pages.dev/ja/docs/) · [Linux ダウンロード](https://flowport.pages.dev/ja/downloads/) · [リリースノート](https://flowport.pages.dev/ja/changelog/#v0-5-15)**
+**[公式サイト](https://flowport.pages.dev/ja/) · [はじめに](https://flowport.pages.dev/ja/docs/) · [Linux ダウンロード](https://flowport.pages.dev/ja/downloads/) · [リリースノート](https://flowport.pages.dev/ja/changelog/#v0-5-16)**
 
-## 0.5.15 の更新
+## 0.5.16 の更新
 
-- Pipeline が状態の上限に達すると、Worker は試行中の状態と途中の出力をロールバックします。受け付け済みバッチ、元の Pipeline バージョン、ソースの受領情報を保持し、バックオフを永続化して再試行します。
-- 同じ負荷で OrbStack を 1 時間実行し、定常時は毎秒 1,271.07 件、取り込み P99 は 226.94 ミリ秒でした。2 回の SIGKILL と再起動後、個別の出力とウィンドウ集計を照合し、欠落や重複は見つかりませんでした。キューは最後に空になりました。
+- データベースの初回スナップショットは挿入が確認されたキーを使って復旧します。MySQL CDC の GTID カーソルは処理済みトランザクションに揃います。Prometheus は設定したスクレイプ期限を守り、ファイル記述子の不足後に WAL の回収を再開できます。
+- アップグレード前に未完了の CDC スナップショットを確認し、各ノードをバックアップしてください。OrbStack の 48 通りのプロトコル組み合わせを検証しました。単一 Worker は 2 回の強制再起動後、期待した 9,400 件をすべて配信しました。
 
 ## ソースから配信まで、ひとつの経路
 

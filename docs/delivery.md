@@ -1,6 +1,6 @@
 # 交付、容量与恢复
 
-[FlowPorts 0.5.15](../README.zh-CN.md) · [完整交付指南](https://flowport.pages.dev/docs/delivery/) · [English](https://flowport.pages.dev/en/docs/delivery/)
+[FlowPorts 0.5.16](../README.zh-CN.md) · [完整交付指南](https://flowport.pages.dev/docs/delivery/) · [English](https://flowport.pages.dev/en/docs/delivery/)
 
 ## 从接收到送达
 
@@ -63,6 +63,10 @@ Pipeline 在独立进程运行。超时可以终止卡住的内置函数，已�
 - 交付采用至少一次语义。写入成功后若回执丢失，重试可能产生重复行。
 
 [MaxCompute 配置指南](https://flowport.pages.dev/docs/integrations/#maxcompute)
+
+### 0.5.16 CDC 初始快照恢复
+
+快照按目的端和表记录已确认插入的主键，恢复时保留目的端原有行。快照期间，其他 Worker 须等原 Worker 停采、排空并交接完整恢复清单后接管。提交结果不明确或遇到未知 MySQL XA 事务时，核对目标记录或源端事务历史后再继续。
 
 ### 0.5.15 Pipeline 状态容量恢复
 

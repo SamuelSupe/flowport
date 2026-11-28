@@ -6,12 +6,12 @@
 
 Collect, process and route logs, metrics, traces and events through **Source → Pipeline → Destinations**.
 
-**[Website](https://flowport.pages.dev/en/) · [Get started](https://flowport.pages.dev/en/docs/) · [Linux downloads](https://flowport.pages.dev/en/downloads/) · [Release notes](https://flowport.pages.dev/en/changelog/#v0-5-15)**
+**[Website](https://flowport.pages.dev/en/) · [Get started](https://flowport.pages.dev/en/docs/) · [Linux downloads](https://flowport.pages.dev/en/downloads/) · [Release notes](https://flowport.pages.dev/en/changelog/#v0-5-16)**
 
-## New in 0.5.15
+## New in 0.5.16
 
-- When the Pipeline reaches its state limit, the Worker rolls back tentative state and partial output. Acknowledged batches stay queued with their original Pipeline version and source receipt, then retry with durable backoff.
-- In a one-hour OrbStack run at the same mixed workload, steady intake reached 1,271.07 records/s at a P99 of 226.94 ms. After two SIGKILL restarts, checks found no missing or duplicate output IDs or window aggregates. The queue drained completely.
+- Database snapshot recovery tracks confirmed inserted keys. MySQL CDC keeps GTID checkpoints aligned with completed transactions. Prometheus respects the full configured scrape deadline, and WAL reclamation resumes after a file descriptor shortage.
+- Before upgrading, reconcile unfinished CDC snapshots and back up each node. In OrbStack, 48 source-to-destination protocol combinations passed. A single Worker delivered all 9,400 expected outputs after two forced restarts.
 
 ## One path, from source to delivery
 

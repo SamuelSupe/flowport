@@ -6,12 +6,12 @@
 
 將日誌、指標、追蹤與事件接入 **Source → Pipeline → Destinations**，在來源與觀測、分析系統之間完成處理和轉送。
 
-**[官網](https://flowport.pages.dev/zh-TW/) · [快速開始](https://flowport.pages.dev/zh-TW/docs/) · [Linux 下載](https://flowport.pages.dev/zh-TW/downloads/) · [版本說明](https://flowport.pages.dev/zh-TW/changelog/#v0-5-15)**
+**[官網](https://flowport.pages.dev/zh-TW/) · [快速開始](https://flowport.pages.dev/zh-TW/docs/) · [Linux 下載](https://flowport.pages.dev/zh-TW/downloads/) · [版本說明](https://flowport.pages.dev/zh-TW/changelog/#v0-5-16)**
 
-## 0.5.15 更新
+## 0.5.16 更新
 
-- Pipeline 達到狀態容量上限時，Worker 回復本次試跑的狀態與部分輸出，保留已確認入佇列的批次、原 Pipeline 版本與來源回執，將退避資訊持久化後重試。
-- 在 OrbStack 以相同負載複測一小時，穩態接入每秒 1,271.07 筆，P99 為 226.94 毫秒。兩次 SIGKILL 重啟後，逐筆核對輸出與視窗彙總，未發現缺失或重複，佇列最後排空。
+- 資料庫初始快照依確認新增的主鍵復原。MySQL CDC 的 GTID 游標與已處理交易對齊。Prometheus 遵循完整的抓取期限，檔案描述符不足後仍可繼續回收 WAL。
+- 升級前請核對未完成的 CDC 快照並備份各節點。OrbStack 的 48 種來源與目的端協定組合通過驗證。單一 Worker 兩次強制重啟後交付全部 9,400 筆預期輸出。
 
 ## 從來源到送達，一條完整路徑
 

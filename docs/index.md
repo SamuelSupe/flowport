@@ -1,6 +1,6 @@
 # FlowPorts documentation · 文档导航
 
-**0.5.15** · [Website / 官网](https://flowport.pages.dev/) · [Downloads / 下载](https://flowport.pages.dev/downloads/) · [Release notes / 更新记录](https://flowport.pages.dev/changelog/#v0-5-15)
+**0.5.16** · [Website / 官网](https://flowport.pages.dev/) · [Downloads / 下载](https://flowport.pages.dev/downloads/) · [Release notes / 更新记录](https://flowport.pages.dev/changelog/#v0-5-16)
 
 Connect sources, process data and deliver it to your observability and analytics systems.
 连接来源、处理数据，再发送到观测与分析系统。

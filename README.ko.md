@@ -6,12 +6,12 @@
 
 로그, 메트릭, 트레이스와 이벤트를 **Source → Pipeline → Destinations**로 처리하여 관측 및 분석 시스템에 전달합니다.
 
-**[공식 사이트](https://flowport.pages.dev/ko/) · [시작하기](https://flowport.pages.dev/ko/docs/) · [Linux 다운로드](https://flowport.pages.dev/ko/downloads/) · [릴리스 노트](https://flowport.pages.dev/ko/changelog/#v0-5-15)**
+**[공식 사이트](https://flowport.pages.dev/ko/) · [시작하기](https://flowport.pages.dev/ko/docs/) · [Linux 다운로드](https://flowport.pages.dev/ko/downloads/) · [릴리스 노트](https://flowport.pages.dev/ko/changelog/#v0-5-16)**
 
-## 0.5.15 업데이트
+## 0.5.16 업데이트
 
-- Pipeline 상태 한도에 도달하면 Worker가 임시 상태와 부분 출력을 롤백합니다. 수집이 확인된 배치, 원래 Pipeline 버전, 소스 수신 응답을 보존하고 백오프를 영속화한 뒤 재시도합니다.
-- OrbStack에서 동일한 부하로 한 시간 동안 재검증한 결과, 정상 상태 수집 처리량은 초당 1,271.07건, P99는 226.94ms였습니다. 두 차례 SIGKILL 후 재시작하여 개별 출력과 윈도우 집계를 대조했고, 누락이나 중복 없이 큐가 모두 비워졌습니다.
+- 데이터베이스 초기 스냅샷은 삽입이 확인된 키를 바탕으로 복구합니다. MySQL CDC의 GTID 커서는 처리된 트랜잭션과 일치합니다. Prometheus는 설정된 스크레이프 기한을 따르며, 파일 디스크립터 부족이 해소되면 WAL 회수를 재개할 수 있습니다.
+- 업그레이드하기 전에 미완료 CDC 스냅샷을 대조하고 각 노드를 백업하세요. OrbStack에서 소스와 대상 간 프로토콜 조합 48개가 통과했습니다. 단일 Worker는 두 번의 강제 재시작 후 예상 출력 9,400건을 모두 전송했습니다.
 
 ## 소스에서 전달까지 하나의 경로
 
